@@ -1,0 +1,12 @@
+package com.s2.LogiTrack_S.A.repository;
+
+import com.s2.LogiTrack_S.A.model.Bodega;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface BodegaRepository extends JpaRepository<Bodega, Long> {
+    List<Bodega> findByNombreContainingIgnoreCase(String nombre);
+    List<Bodega> findByCiudadId_IdCiudad(Long ciudadId);
+    List<Bodega> findByUsuarioId_Id(Long usuarioId);
+}
