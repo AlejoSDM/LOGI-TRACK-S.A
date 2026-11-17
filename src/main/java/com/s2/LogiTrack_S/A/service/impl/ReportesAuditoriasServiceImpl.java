@@ -38,12 +38,12 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
 
     private com.s2.LogiTrack_S.A.model.AuditoriaTransferencia transferencia(Long id) {
-        return id == null ? null : transferenciaRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe la transferencia: " + id));
+        return id == null ? null : transferenciaRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe la transferencia "));
     }
 
 
     private com.s2.LogiTrack_S.A.model.AuditoriaSalidaEntrada salidaEntrada(Long id) {
-        return id == null ? null : salidaRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe la auditoría de entrada/salida: " + id));
+        return id == null ? null : salidaRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe la auditoría de entrada/salida "));
     }
 
     @Override
@@ -54,14 +54,14 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
     @Override
     public ReportesAuditoriasDtoResponse actualizar(ReportesAuditoriasDtoRequest dto, Long id) {
-        ReportesAuditorias r = repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte: " + id));
+        ReportesAuditorias r = repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte "));
         mapper.updateEntityFromDto(r, dto, salidaEntrada(dto.salidaEntradaId()), transferencia(dto.transferenciaId()));
         return respuesta(repository.save(r));
     }
 
     @Override
     public void eliminar(Long id) {
-        repository.delete(repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte: " + id)));
+        repository.delete(repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte ")));
     }
 
     @Override
@@ -71,6 +71,6 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
     @Override
     public ReportesAuditoriasDtoResponse buscarId(Long id) {
-        return respuesta(repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte: " + id)));
+        return respuesta(repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte ")));
     }
 }
