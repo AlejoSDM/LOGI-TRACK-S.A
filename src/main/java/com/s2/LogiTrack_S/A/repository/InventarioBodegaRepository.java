@@ -6,14 +6,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface InventarioBodegaRepository extends JpaRepository<InventarioBodega, Long> {
+public interface InventarioBodegaRepository
+        extends JpaRepository<InventarioBodega, Long> {
+
     List<InventarioBodega> findByStockLessThan(Integer limite);
+
     List<InventarioBodega> findByBodegaId_Id(Long bodegaId);
+
     List<InventarioBodega> findByProductoId_Id(Long productoId);
-    Optional<InventarioBodega> findByBodegaId_IdAndProductoId_Id(Long bodegaId, Long productoId);
+
     boolean existsByBodegaId_Id(Long bodegaId);
+
+    boolean existsByBodegaId_IdAndProductoId_Id(
+            Long bodegaId, Long productoId);
+
     @Query("SELECT COALESCE(SUM(i.stock), 0) FROM InventarioBodega i WHERE i.bodegaId.id = :bodegaId")
     Long sumarStockPorBodega(@Param("bodegaId") Long bodegaId);
 }

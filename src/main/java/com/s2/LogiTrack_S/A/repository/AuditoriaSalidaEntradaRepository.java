@@ -7,9 +7,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AuditoriaSalidaEntradaRepository extends JpaRepository<AuditoriaSalidaEntrada, Long> {
-    List<AuditoriaSalidaEntrada> findByFechaBetween(LocalDateTime desde, LocalDateTime hasta);
+
+    List<AuditoriaSalidaEntrada> findByFechaBetween(
+            LocalDateTime desde, LocalDateTime hasta);
+
     List<AuditoriaSalidaEntrada> findByUsuarioId_Id(Long usuarioId);
-    List<AuditoriaSalidaEntrada> findByTipoAccion(AuditoriaSalidaEntrada.TipoAccion tipoAccion);
-    List<AuditoriaSalidaEntrada> findByUsuarioId_IdAndFechaBetween(Long usuarioId, LocalDateTime desde, LocalDateTime hasta);
+
+    List<AuditoriaSalidaEntrada> findByTipoAccion(
+            AuditoriaSalidaEntrada.TipoAccion tipoAccion);
+
+    List<AuditoriaSalidaEntrada> findByUsuarioId_IdAndFechaBetween(
+            Long usuarioId, LocalDateTime desde, LocalDateTime hasta);
+
+    List<AuditoriaSalidaEntrada> findByBodegaId_Id(Long bodegaId);
+
+    List<AuditoriaSalidaEntrada> findByProductoId_Id(Long productoId);
+
+    List<AuditoriaSalidaEntrada> findByBodegaId_IdAndFechaBetween(
+            Long bodegaId, LocalDateTime desde, LocalDateTime hasta);
+
     boolean existsByBodegaId_Id(Long bodegaId);
 }
