@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InventarioBodegaRepository
         extends JpaRepository<InventarioBodega, Long> {
@@ -15,6 +16,11 @@ public interface InventarioBodegaRepository
     List<InventarioBodega> findByBodegaId_Id(Long bodegaId);
 
     List<InventarioBodega> findByProductoId_Id(Long productoId);
+
+    Optional<InventarioBodega> findByBodegaId_IdAndProductoId_Id(
+            Long bodegaId,
+            Long productoId
+    );
 
     boolean existsByBodegaId_Id(Long bodegaId);
 

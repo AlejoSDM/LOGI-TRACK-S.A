@@ -7,12 +7,11 @@ import com.s2.LogiTrack_S.A.dto.response.ProductosDtoResponse;
 import com.s2.LogiTrack_S.A.dto.response.UsuarioDtoResponse;
 import com.s2.LogiTrack_S.A.exception.DatabaseRuleException;
 import com.s2.LogiTrack_S.A.mapper.*;
-import com.s2.LogiTrack_S.A.model.AuditoriaSalidaEntrada;
-import com.s2.LogiTrack_S.A.model.Bodega;
-import com.s2.LogiTrack_S.A.model.Productos;
-import com.s2.LogiTrack_S.A.model.Usuario;
+import com.s2.LogiTrack_S.A.model.*;
 import com.s2.LogiTrack_S.A.repository.*;
 import com.s2.LogiTrack_S.A.service.AuditoriaSalidaEntradaService;
+import com.s2.LogiTrack_S.A.validation.AuditoriaSalidaEntradaValidation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,36 +34,27 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
     private final UsuarioRepository usuarioRepository;
     private final BodegaRepository bodegaRepository;
     private final ProductosRepository productosRepository;
+    private final InventarioBodegaRepository inventarioBodegaRepository;
+
+    private final AuditoriaSalidaEntradaValidation auditoriaValidation;
 
     @Override
+    @Transactional
     public AuditoriaSalidaEntradaDtoResponse guardar(AuditoriaSalidaEntradaDtoRequest dto) {
         Usuario u = usuarioRepository.findById(dto.usuarioId()).orElseThrow(() -> new DatabaseRuleException("No existe el usuario"));
         Bodega b = bodegaRepository.findById(dto.bodegaId()).orElseThrow(() -> new DatabaseRuleException("No existe la bodega"));
         Productos p = productosRepository.findById(dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe el producto"));
+        auditoriaValidation.validarUsuario(u, b);
+        // BUSCAR EL INVENTARIO EXISTENTE
+        InventarioBodega inventario = inventarioBodegaRepository.findByBodegaId_IdAndProductoId_Id(dto.bodegaId(), dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe un inventario registrado para este producto en esta bodega"));
+        // MODIFICAR STOCK
+        auditoriaValidation.modificarStock(inventario, dto.tipoAccion(), dto.cantidad());
+        inventarioBodegaRepository.save(inventario);
         AuditoriaSalidaEntrada a = auditoriaSalidaEntradaMapper.dtoToEntity(dto, u, b, p);
         UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(u, personaMapper.entityToDto(u.getPersonaId()));
         BodegaDtoResponse bodegaDto = bodegaMapper.entityToDto(b, ciudadMapper.entityToDto(b.getCiudadId()), usuarioMapper.entityToDto(b.getUsuarioId(), personaMapper.entityToDto(b.getUsuarioId().getPersonaId())));
         ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
         return auditoriaSalidaEntradaMapper.entityToDto(auditoriaSalidaEntradaRepository.save(a), usuarioDto, bodegaDto, productoDto);
-    }
-
-    @Override
-    public AuditoriaSalidaEntradaDtoResponse actualizar(AuditoriaSalidaEntradaDtoRequest dto, Long id) {
-        AuditoriaSalidaEntrada a = auditoriaSalidaEntradaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la auditoría"));
-        Usuario u = usuarioRepository.findById(dto.usuarioId()).orElseThrow(() -> new DatabaseRuleException("No existe el usuario"));
-        Bodega b = bodegaRepository.findById(dto.bodegaId()).orElseThrow(() -> new DatabaseRuleException("No existe la bodega"));
-        Productos p = productosRepository.findById(dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe el producto"));
-        UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(u, personaMapper.entityToDto(u.getPersonaId()));
-        BodegaDtoResponse bodegaDto = bodegaMapper.entityToDto(b, ciudadMapper.entityToDto(b.getCiudadId()), usuarioMapper.entityToDto(b.getUsuarioId(), personaMapper.entityToDto(b.getUsuarioId().getPersonaId())));
-        ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
-        auditoriaSalidaEntradaMapper.updateEntityFromDto(a, dto, u, b, p);
-        return auditoriaSalidaEntradaMapper.entityToDto(auditoriaSalidaEntradaRepository.save(a), usuarioDto, bodegaDto, productoDto);
-    }
-
-    @Override
-    public void eliminar(Long id) {
-        AuditoriaSalidaEntrada a = auditoriaSalidaEntradaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la auditoría"));
-        auditoriaSalidaEntradaRepository.delete(a);
     }
 
     @Override

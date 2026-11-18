@@ -7,8 +7,6 @@ import java.util.List;
 public interface AuditoriaSalidaEntradaService {
 
     AuditoriaSalidaEntradaDtoResponse guardar(AuditoriaSalidaEntradaDtoRequest dto);
-    AuditoriaSalidaEntradaDtoResponse actualizar(AuditoriaSalidaEntradaDtoRequest dto, Long id);
-    void eliminar(Long id);
     List<AuditoriaSalidaEntradaDtoResponse> listar();
     AuditoriaSalidaEntradaDtoResponse buscarId(Long id);
 }
