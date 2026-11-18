@@ -11,4 +11,5 @@ public interface AuditoriaSalidaEntradaRepository extends JpaRepository<Auditori
     List<AuditoriaSalidaEntrada> findByUsuarioId_Id(Long usuarioId);
     List<AuditoriaSalidaEntrada> findByTipoAccion(AuditoriaSalidaEntrada.TipoAccion tipoAccion);
     List<AuditoriaSalidaEntrada> findByUsuarioId_IdAndFechaBetween(Long usuarioId, LocalDateTime desde, LocalDateTime hasta);
+    boolean existsByBodegaId_Id(Long bodegaId);
 }

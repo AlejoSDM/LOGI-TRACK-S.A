@@ -11,4 +11,5 @@ public interface AuditoriaTransferenciaRepository extends JpaRepository<Auditori
     List<AuditoriaTransferencia> findByUsuarioId_Id(Long usuarioId);
     List<AuditoriaTransferencia> findByBodegaOrigenId_IdOrBodegaDestinoId_Id(Long origenId, Long destinoId);
     List<AuditoriaTransferencia> findByUsuarioId_IdAndFechaBetween(Long usuarioId, LocalDateTime desde, LocalDateTime hasta);
+    boolean existsByBodegaOrigenId_IdOrBodegaDestinoId_Id(Long bodegaIdOrigen, Long bodegaIdDestino);
 }

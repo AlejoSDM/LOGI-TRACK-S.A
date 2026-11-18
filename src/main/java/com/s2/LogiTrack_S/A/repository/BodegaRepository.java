@@ -9,4 +9,8 @@ public interface BodegaRepository extends JpaRepository<Bodega, Long> {
     List<Bodega> findByNombreContainingIgnoreCase(String nombre);
     List<Bodega> findByCiudadId_IdCiudad(Long ciudadId);
     List<Bodega> findByUsuarioId_Id(Long usuarioId);
+    boolean existsByNombreIgnoreCaseAndCiudadId_IdCiudad(String nombre, Long ciudadId);
+    boolean existsByNombreIgnoreCaseAndCiudadId_IdCiudadAndIdNot(
+            String nombre, Long ciudadId, Long id
+    );
 }
