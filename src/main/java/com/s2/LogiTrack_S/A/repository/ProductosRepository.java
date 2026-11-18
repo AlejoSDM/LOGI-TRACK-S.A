@@ -20,4 +20,6 @@ public interface ProductosRepository extends JpaRepository<Productos, Long> {
             String nombre, Long marcaId, Long id);
 
     boolean existsByMarcaId_Id(Long marcaId);
+
+    boolean existsByCategoriaId_Id(Long categoriaId);
 }

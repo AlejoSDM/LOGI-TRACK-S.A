@@ -5,4 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoriaProductoRepository extends JpaRepository<CategoriaProducto, Long> {
     boolean existsByTipoCategoria(CategoriaProducto.TipoCategoria tipoCategoria);
+
+    boolean existsByTipoCategoriaAndIdNot(
+            CategoriaProducto.TipoCategoria tipoCategoria, Long id
+    );
+
 }
