@@ -88,4 +88,14 @@ public class PersonaController {
     public ResponseEntity<PersonaDtoResponse> buscarId(@Parameter(description = "Identificador de la persona", example = "1")@PathVariable Long id) {
         return ResponseEntity.ok(personaService.buscarId(id));
     }
+
+
+    // BUSCAR PERSONAS POR NOMBRE
+
+    @Operation(summary = "Buscar personas por nombre", description = "Busca personas cuyo nombre contenga el texto indicado, sin distinguir mayúsculas y minúsculas.")
+    @ApiResponse(responseCode = "200", description = "Resultados de la búsqueda")
+    @GetMapping("/buscar")
+    public ResponseEntity<List<PersonaDtoResponse>> buscarPorNombre(@Parameter(description = "Nombre o parte del nombre que se desea buscar", example = "Alejandro") @RequestParam String nombre) {
+        return ResponseEntity.ok(personaService.buscarPorNombre(nombre));
+    }
 }
