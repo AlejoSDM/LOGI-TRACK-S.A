@@ -27,4 +27,6 @@ public interface AuditoriaTransferenciaRepository extends JpaRepository<Auditori
 
     boolean existsByBodegaOrigenId_IdOrBodegaDestinoId_Id(
             Long origenId, Long destinoId);
+
+    boolean existsByUsuarioId_Id(Long usuarioId);
 }

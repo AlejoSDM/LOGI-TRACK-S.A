@@ -20,4 +20,6 @@ public interface BodegaRepository extends JpaRepository<Bodega, Long> {
             String nombre, Long ciudadId, Long id);
 
     boolean existsByCiudadId_IdCiudad(Long ciudadId);
+
+    boolean existsByUsuarioId_Id(Long usuarioId);
 }

@@ -11,6 +11,7 @@ import com.s2.LogiTrack_S.A.model.Usuario;
 import com.s2.LogiTrack_S.A.repository.PersonaRepository;
 import com.s2.LogiTrack_S.A.repository.UsuarioRepository;
 import com.s2.LogiTrack_S.A.service.UsuarioService;
+import com.s2.LogiTrack_S.A.validation.UsuarioValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +25,11 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PersonaRepository personaRepository;
     private final PersonaMapper personaMapper;
+    private final UsuarioValidation usuarioValidation;
 
     @Override
     public UsuarioDtoResponse guardar(UsuarioDtoRequest dto) {
+        usuarioValidation.validarGuardar(dto.username(), dto.personaId());
         Persona p = personaRepository.findById(dto.personaId()).orElseThrow(()-> new DatabaseRuleException("Codigo de persona no existe"));
         Usuario usuario = usuarioMapper.DtoToEntity(dto, p);
         PersonaDtoResponse personaDtoResponse = personaMapper.entityToDto(p);
@@ -35,7 +38,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDtoResponse actualizar(UsuarioDtoRequest dto, Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe el usuario: " ));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el usuario: " ));
+        usuarioValidation.validarActualizar(dto.username(), dto.personaId(), id);
         Persona p = personaRepository.findById(dto.personaId()).orElseThrow(() -> new DatabaseRuleException("Codigo de persona no existe"));
         PersonaDtoResponse personaDtoResponse = personaMapper.entityToDto(p);
         usuarioMapper.updateEntityFromDto(usuario, dto, p);
@@ -44,7 +48,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void eliminar(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe el usuario "));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el usuario "));
+        usuarioValidation.validarEliminar(id);
         usuarioRepository.delete(usuario);
     }
 
@@ -57,7 +62,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDtoResponse buscarId(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe el usuario "));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el usuario "));
         return usuarioMapper.entityToDto(usuario, personaMapper.entityToDto(usuario.getPersonaId()));
     }
 

@@ -27,4 +27,6 @@ public interface AuditoriaSalidaEntradaRepository extends JpaRepository<Auditori
             Long bodegaId, LocalDateTime desde, LocalDateTime hasta);
 
     boolean existsByBodegaId_Id(Long bodegaId);
+
+    boolean existsByUsuarioId_Id(Long usuarioId);
 }

@@ -20,4 +20,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             Usuario.Rol rol, Boolean estado);
 
     boolean existsByPersonaId_Id(Long personaId);
+
+    boolean existsByUsernameAndIdNot(String username, Long id);
+
+    boolean existsByPersonaId_IdAndIdNot(Long personaId, Long id);
 }
