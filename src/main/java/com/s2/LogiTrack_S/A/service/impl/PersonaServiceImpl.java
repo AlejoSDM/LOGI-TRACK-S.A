@@ -7,6 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.PersonaMapper;
 import com.s2.LogiTrack_S.A.model.Persona;
 import com.s2.LogiTrack_S.A.repository.PersonaRepository;
 import com.s2.LogiTrack_S.A.service.PersonaService;
+import com.s2.LogiTrack_S.A.validation.PersonaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -18,6 +19,7 @@ public class PersonaServiceImpl implements PersonaService {
 
     private final PersonaMapper personaMapper;
     private final PersonaRepository personaRepository;
+    private final PersonaValidation personaValidation;
 
     @Override
     public PersonaDtoResponse guardar(PersonaDtoRequest dto) {
@@ -37,6 +39,7 @@ public class PersonaServiceImpl implements PersonaService {
     @Override
     public void eliminar(Long id) {
         Persona p = personaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Persona no encontrada: "));
+        personaValidation.validarEliminar(id);
         personaRepository.delete(p);
     }
 
