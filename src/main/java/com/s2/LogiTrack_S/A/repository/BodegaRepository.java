@@ -18,4 +18,6 @@ public interface BodegaRepository extends JpaRepository<Bodega, Long> {
 
     boolean existsByNombreIgnoreCaseAndCiudadId_IdCiudadAndIdNot(
             String nombre, Long ciudadId, Long id);
+
+    boolean existsByCiudadId_IdCiudad(Long ciudadId);
 }
