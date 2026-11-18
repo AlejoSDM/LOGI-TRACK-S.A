@@ -10,4 +10,8 @@ public interface ProductosService {
     void eliminar(Long id);
     List<ProductosDtoResponse> listar();
     ProductosDtoResponse buscarId(Long id);
+    List<ProductosDtoResponse> buscarPorNombre(String nombre);
+    List<ProductosDtoResponse> buscarPorCategoria(Long categoriaId);
+    List<ProductosDtoResponse> buscarPorMarca(Long marcaId);
 }
+

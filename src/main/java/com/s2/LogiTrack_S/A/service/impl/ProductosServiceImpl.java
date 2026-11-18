@@ -15,6 +15,7 @@ import com.s2.LogiTrack_S.A.repository.ProductosRepository;
 import com.s2.LogiTrack_S.A.repository.MarcaRepository;
 import com.s2.LogiTrack_S.A.repository.CategoriaProductoRepository;
 import com.s2.LogiTrack_S.A.service.ProductosService;
+import com.s2.LogiTrack_S.A.validation.ProductosValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,13 @@ public class ProductosServiceImpl implements ProductosService {
     private final ProductosRepository productosRepository;
     private final MarcaRepository marcaRepository;
     private final CategoriaProductoRepository categoriaRepository;
+    private final ProductosValidation productosValidation;
 
     @Override
     public ProductosDtoResponse guardar(ProductosDtoRequest dto) {
         Marca m = marcaRepository.findById(dto.marcaId()).orElseThrow(() -> new DatabaseRuleException("No existe la marca "));
         CategoriaProducto c = categoriaRepository.findById(dto.categoriaId()).orElseThrow(() -> new DatabaseRuleException("No existe la categoría "));
+        productosValidation.validarNombreGuardar(dto.nombre(), dto.marcaId());
         Productos productos = productosMapper.dtoToEntity(dto, m, c);
         MarcaDtoResponse marcaDtoResponse = marcaMapper.entityToDto(m);
         CategoriaProductoDtoResponse categoriaDtoResponse = categoriaMapper.entityToDto(c);
@@ -47,6 +50,7 @@ public class ProductosServiceImpl implements ProductosService {
        Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto: "));
        Marca m = marcaRepository.findById(dto.marcaId()).orElseThrow(() -> new DatabaseRuleException("No existe la marca "));
        CategoriaProducto c = categoriaRepository.findById(dto.categoriaId()).orElseThrow(() -> new DatabaseRuleException("No existe la categoría "));
+       productosValidation.validarNombreActualizar(dto.nombre(), dto.marcaId(), id);
        MarcaDtoResponse marcaDtoResponse = marcaMapper.entityToDto(m);
        CategoriaProductoDtoResponse categoriaDtoResponse = categoriaMapper.entityToDto(c);
        productosMapper.updateEntityFromDto(p, dto, m, c);
@@ -56,6 +60,7 @@ public class ProductosServiceImpl implements ProductosService {
     @Override
     public void eliminar(Long id) {
         Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto: "));
+        productosValidation.validarEliminar(id);
         productosRepository.delete(p);
     }
 
@@ -71,5 +76,45 @@ public class ProductosServiceImpl implements ProductosService {
     public ProductosDtoResponse buscarId(Long id) {
         Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto "));
         return productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
+    }
+
+
+    @Override
+    public List<ProductosDtoResponse> buscarPorNombre(String nombre) {
+
+        return productosRepository.findByNombreContainingIgnoreCase(nombre)
+                .stream()
+                .map(p -> productosMapper.entityToDto(
+                        p,
+                        marcaMapper.entityToDto(p.getMarcaId()),
+                        categoriaMapper.entityToDto(p.getCategoriaId())
+                )).toList();
+    }
+
+
+
+    @Override
+    public List<ProductosDtoResponse> buscarPorCategoria(Long categoriaId) {
+
+        return productosRepository.findByCategoriaId_Id(categoriaId)
+                .stream()
+                .map(p -> productosMapper.entityToDto(
+                        p,
+                        marcaMapper.entityToDto(p.getMarcaId()),
+                        categoriaMapper.entityToDto(p.getCategoriaId())
+                )).toList();
+    }
+
+
+    @Override
+    public List<ProductosDtoResponse> buscarPorMarca(Long marcaId) {
+
+        return productosRepository.findByMarcaId_Id(marcaId)
+                .stream()
+                .map(p -> productosMapper.entityToDto(
+                        p,
+                        marcaMapper.entityToDto(p.getMarcaId()),
+                        categoriaMapper.entityToDto(p.getCategoriaId())
+                )).toList();
     }
 }

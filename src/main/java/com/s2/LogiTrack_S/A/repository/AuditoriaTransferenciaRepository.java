@@ -25,6 +25,8 @@ public interface AuditoriaTransferenciaRepository extends JpaRepository<Auditori
 
     List<AuditoriaTransferencia> findByBodegaDestinoId_Id(Long bodegaId);
 
+    boolean existsByProductoId_Id(Long productoId);
+
     boolean existsByBodegaOrigenId_IdOrBodegaDestinoId_Id(
             Long origenId, Long destinoId);
 
