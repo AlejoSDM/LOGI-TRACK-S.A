@@ -8,4 +8,8 @@ public interface BodegaService { BodegaDtoResponse guardar(BodegaDtoRequest dto)
     BodegaDtoResponse actualizar(BodegaDtoRequest dto, Long id);
     void eliminar(Long id);
     List<BodegaDtoResponse> listar();
-    BodegaDtoResponse buscarId(Long id); }
+    BodegaDtoResponse buscarId(Long id);
+    List<BodegaDtoResponse> buscarNombre(String nombre);
+    List<BodegaDtoResponse> buscarCiudad(Long ciudadId);
+    List<BodegaDtoResponse> buscarEmpleado(Long usuarioId);
+}

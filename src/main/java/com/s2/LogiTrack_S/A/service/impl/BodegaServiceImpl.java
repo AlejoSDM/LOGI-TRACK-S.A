@@ -83,4 +83,46 @@ public class BodegaServiceImpl implements BodegaService {
         Bodega b = bodegaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la bodega"));
         return bodegaMapper.entityToDto(b, ciudadMapper.entityToDto(b.getCiudadId()), usuarioMapper.entityToDto(b.getUsuarioId(), personaMapper.entityToDto(b.getUsuarioId().getPersonaId())));
     }
+
+    @Override
+    public List<BodegaDtoResponse> buscarNombre(String nombre) {
+        return bodegaRepository.findByNombreContainingIgnoreCase(nombre)
+                .stream()
+                .map(b -> bodegaMapper.entityToDto(
+                        b,
+                        ciudadMapper.entityToDto(b.getCiudadId()),
+                        usuarioMapper.entityToDto(
+                                b.getUsuarioId(),
+                                personaMapper.entityToDto(b.getUsuarioId().getPersonaId())
+                        )
+                )).toList();
+    }
+
+    @Override
+    public List<BodegaDtoResponse> buscarCiudad(Long ciudadId) {
+        return bodegaRepository.findByCiudadId(ciudadId)
+                .stream()
+                .map(b -> bodegaMapper.entityToDto(
+                        b,
+                        ciudadMapper.entityToDto(b.getCiudadId()),
+                        usuarioMapper.entityToDto(
+                                b.getUsuarioId(),
+                                personaMapper.entityToDto(b.getUsuarioId().getPersonaId())
+                        )
+                )).toList();
+    }
+
+    @Override
+    public List<BodegaDtoResponse> buscarEmpleado(Long usuarioId) {
+        return bodegaRepository.findByUsuarioId_Id(usuarioId)
+                .stream()
+                .map(b -> bodegaMapper.entityToDto(
+                        b,
+                        ciudadMapper.entityToDto(b.getCiudadId()),
+                        usuarioMapper.entityToDto(
+                                b.getUsuarioId(),
+                                personaMapper.entityToDto(b.getUsuarioId().getPersonaId())
+                        )
+                )).toList();
+    }
 }
