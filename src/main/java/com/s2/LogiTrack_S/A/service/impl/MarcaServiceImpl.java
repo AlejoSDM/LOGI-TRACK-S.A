@@ -7,6 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.MarcaMapper;
 import com.s2.LogiTrack_S.A.model.Marca;
 import com.s2.LogiTrack_S.A.repository.MarcaRepository;
 import com.s2.LogiTrack_S.A.service.MarcaService;
+import com.s2.LogiTrack_S.A.validation.MarcaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,11 @@ public class MarcaServiceImpl implements MarcaService {
 
     private final MarcaMapper marcaMapper;
     private final MarcaRepository marcaRepository;
+    private final MarcaValidation marcaValidation;
 
     @Override
     public MarcaDtoResponse guardar(MarcaDtoRequest dto) {
+        marcaValidation.validarNombreGuardar(dto.nombreMarca());
         Marca m = marcaMapper.dtoToEntity(dto);
         Marca marcaDtoResponse = marcaRepository.save(m);
         return marcaMapper.entityToDto(marcaDtoResponse);
@@ -30,6 +33,7 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     public MarcaDtoResponse actualizar(MarcaDtoRequest dto, Long id) {
         Marca m = marcaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Marca no encontrada: "));
+        marcaValidation.validarNombreActualizar(dto.nombreMarca(), id);
         marcaMapper.updateEntityFromDto(m, dto);
         Marca marcaActualizada = marcaRepository.save(m);
         return marcaMapper.entityToDto(marcaActualizada);
@@ -38,6 +42,7 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     public void eliminar(Long id) {
         Marca m = marcaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Marca no encontrada: "));
+        marcaValidation.validarEliminar(id);
         marcaRepository.delete(m);
     }
 
@@ -53,5 +58,13 @@ public class MarcaServiceImpl implements MarcaService {
         Marca m = marcaRepository.findById(id)
                 .orElseThrow(() -> new DatabaseRuleException("Marca no encontrada: "));
         return marcaMapper.entityToDto(m);
+    }
+
+    @Override
+    public List<MarcaDtoResponse> buscarPorNombre(String nombreMarca) {
+        return marcaRepository.findByNombreMarcaContainingIgnoreCase(nombreMarca)
+                .stream()
+                .map(marcaMapper::entityToDto)
+                .toList();
     }
 }

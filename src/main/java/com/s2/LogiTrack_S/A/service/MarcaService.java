@@ -11,5 +11,5 @@ public interface MarcaService {
     void eliminar(Long id);
     List<MarcaDtoResponse> listar();
     MarcaDtoResponse buscarId(Long id);
-
+    List<MarcaDtoResponse> buscarPorNombre(String nombreMarca);
 }

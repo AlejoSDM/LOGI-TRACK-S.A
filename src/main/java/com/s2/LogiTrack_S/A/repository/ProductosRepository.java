@@ -18,4 +18,6 @@ public interface ProductosRepository extends JpaRepository<Productos, Long> {
 
     boolean existsByNombreIgnoreCaseAndMarcaId_IdAndIdNot(
             String nombre, Long marcaId, Long id);
+
+    boolean existsByMarcaId_Id(Long marcaId);
 }
