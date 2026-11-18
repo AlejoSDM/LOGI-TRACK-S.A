@@ -69,7 +69,7 @@ public class ProductosServiceImpl implements ProductosService {
 
     @Override
     public ProductosDtoResponse buscarId(Long id) {
-        Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto: " + id));
+        Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto "));
         return productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
     }
 }

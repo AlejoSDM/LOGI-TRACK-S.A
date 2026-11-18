@@ -46,7 +46,8 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     public PersonaDtoResponse buscarId(Long id) {
-        return personaMapper.entityToDto(personaRepository.findById(id).orElseThrow(() -> new RuntimeException("Persona no encontrada: ")));
+        Persona p = personaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Persona no encontrada: "));
+        return personaMapper.entityToDto(p);
     }
 
 }

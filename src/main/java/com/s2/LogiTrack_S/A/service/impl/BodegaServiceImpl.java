@@ -100,7 +100,7 @@ public class BodegaServiceImpl implements BodegaService {
 
     @Override
     public List<BodegaDtoResponse> buscarCiudad(Long ciudadId) {
-        return bodegaRepository.findByCiudadId(ciudadId)
+        return bodegaRepository.findByCiudadId_IdCiudad(ciudadId)
                 .stream()
                 .map(b -> bodegaMapper.entityToDto(
                         b,

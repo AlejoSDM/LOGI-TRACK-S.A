@@ -96,7 +96,7 @@ public class BodegaController {
     @Operation(summary = "Buscar bodegas por nombre", description = "Busca bodegas cuyo nombre coincida parcial o completamente con el texto proporcionado.")
     @ApiResponse(responseCode = "200", description = "Búsqueda realizada correctamente")
     @GetMapping("/buscar")
-    public ResponseEntity<List<BodegaDtoResponse>> buscarNombre(@Parameter(description = "Nombre o parte del nombre de la bodega", example = "Central") @RequestParam String nombre) {
+    public ResponseEntity<List<BodegaDtoResponse>>buscarNombre(@Parameter(description = "Nombre o parte del nombre de la bodega", example = "Central") @RequestParam String nombre) {
         return ResponseEntity.ok(bodegaService.buscarNombre(nombre));
     }
 
@@ -106,7 +106,7 @@ public class BodegaController {
     @Operation(summary = "Buscar bodegas por ciudad", description = "Obtiene todas las bodegas asociadas a una ciudad.")
     @ApiResponse(responseCode = "200", description = "Búsqueda realizada correctamente")
     @GetMapping("/ciudad/{ciudadId}")
-    public ResponseEntity<List<BodegaDtoResponse>> buscarCiudad(@Parameter(description = "Identificador de la ciudad", example = "1") @PathVariable Long ciudadId) {
+    public ResponseEntity<List<BodegaDtoResponse>>buscarCiudad(@Parameter(description = "Identificador de la ciudad", example = "1") @PathVariable Long ciudadId) {
         return ResponseEntity.ok(bodegaService.buscarCiudad(ciudadId));
     }
 
@@ -116,7 +116,7 @@ public class BodegaController {
     @Operation(summary = "Buscar bodegas por empleado", description = "Obtiene las bodegas asignadas a un empleado encargado.")
     @ApiResponse(responseCode = "200", description = "Búsqueda realizada correctamente")
     @GetMapping("/empleado/{usuarioId}")
-    public ResponseEntity<List<BodegaDtoResponse>> buscarEmpleado(@Parameter(description = "Identificador del usuario encargado", example = "1") @PathVariable Long usuarioId) {
+    public ResponseEntity<List<BodegaDtoResponse>>buscarEmpleado(@Parameter(description = "Identificador del usuario encargado", example = "1") @PathVariable Long usuarioId) {
         return ResponseEntity.ok(bodegaService.buscarEmpleado(usuarioId));
     }
 }
