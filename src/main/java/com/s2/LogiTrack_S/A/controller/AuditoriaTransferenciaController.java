@@ -12,11 +12,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -55,5 +57,60 @@ public class AuditoriaTransferenciaController {
     @GetMapping("/{id}")
     public ResponseEntity<AuditoriaTransferenciaDtoResponse> buscarId(@Parameter(description = "Identificador de la transferencia") @PathVariable @Positive Long id) {
         return ResponseEntity.ok(auditoriaService.buscarId(id));
+    }
+
+    // BUSCAR POR RANGO DE FECHAS
+    @Operation(summary = "Buscar transferencias por rango de fechas")
+    @GetMapping("/fecha")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorFecha(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta) {
+        return ResponseEntity.ok(auditoriaService.buscarPorFecha(desde, hasta));
+    }
+
+    // BUSCAR POR USUARIO
+    @Operation(summary = "Buscar transferencias por usuario")
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorUsuario(@PathVariable @Positive Long usuarioId) {
+        return ResponseEntity.ok(auditoriaService.buscarPorUsuario(usuarioId));
+    }
+
+    // BUSCAR POR BODEGA DE ORIGEN O DESTINO
+    @Operation(summary = "Buscar transferencias donde participa una bodega")
+    @GetMapping("/bodega/{bodegaId}")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorBodegas(@PathVariable @Positive Long bodegaId) {
+        return ResponseEntity.ok(auditoriaService.buscarPorBodegas(bodegaId));
+    }
+
+    // BUSCAR POR USUARIO Y FECHAS
+    @Operation(summary = "Buscar transferencias por usuario y rango de fechas")
+    @GetMapping("/usuario/{usuarioId}/fecha")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorUsuarioYFecha(@PathVariable @Positive Long usuarioId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta) {
+
+        return ResponseEntity.ok(auditoriaService.buscarPorUsuarioYFecha(usuarioId, desde, hasta)
+        );
+    }
+
+    // BUSCAR POR PRODUCTO
+    @Operation(summary = "Buscar transferencias por producto")
+    @GetMapping("/producto/{productoId}")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorProducto(@PathVariable @Positive Long productoId) {
+        return ResponseEntity.ok(auditoriaService.buscarPorProducto(productoId));
+    }
+
+    // BUSCAR POR BODEGA DE ORIGEN
+    @Operation(summary = "Buscar transferencias por bodega de origen")
+    @GetMapping("/bodega-origen/{bodegaId}")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorBodegaOrigen(@PathVariable @Positive Long bodegaId) {
+        return ResponseEntity.ok(auditoriaService.buscarPorBodegaOrigen(bodegaId));
+    }
+
+    // BUSCAR POR BODEGA DE DESTINO
+    @Operation(summary = "Buscar transferencias por bodega de destino")
+    @GetMapping("/bodega-destino/{bodegaId}")
+    public ResponseEntity<List<AuditoriaTransferenciaDtoResponse>> buscarPorBodegaDestino(@PathVariable @Positive Long bodegaId) {
+        return ResponseEntity.ok(auditoriaService.buscarPorBodegaDestino(bodegaId));
     }
 }
