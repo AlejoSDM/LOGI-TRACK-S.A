@@ -2,9 +2,12 @@ package com.s2.LogiTrack_S.A.service.impl;
 
 import com.s2.LogiTrack_S.A.dto.request.ReportesAuditoriasDtoRequest;
 import com.s2.LogiTrack_S.A.dto.response.*;
+import com.s2.LogiTrack_S.A.exception.DatabaseRuleException;
 import com.s2.LogiTrack_S.A.mapper.*;
 import com.s2.LogiTrack_S.A.model.ReportesAuditorias;
 import com.s2.LogiTrack_S.A.repository.*;
+import com.s2.LogiTrack_S.A.service.AuditoriaSalidaEntradaService;
+import com.s2.LogiTrack_S.A.service.AuditoriaTransferenciaService;
 import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService {
     private final ReportesAuditoriasMapper mapper;
-    private final AuditoriaTransferenciaServiceImpl transferenciaService;
-    private final AuditoriaSalidaEntradaServiceImpl salidaService;
+    private final AuditoriaTransferenciaService transferenciaService;
+    private final AuditoriaSalidaEntradaService salidaService;
     private final ReportesAuditoriasRepository repository;
     private final AuditoriaTransferenciaRepository transferenciaRepository;
     private final AuditoriaSalidaEntradaRepository salidaRepository;
@@ -38,12 +41,12 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
 
     private com.s2.LogiTrack_S.A.model.AuditoriaTransferencia transferencia(Long id) {
-        return id == null ? null : transferenciaRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe la transferencia "));
+        return id == null ? null : transferenciaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la transferencia "));
     }
 
 
     private com.s2.LogiTrack_S.A.model.AuditoriaSalidaEntrada salidaEntrada(Long id) {
-        return id == null ? null : salidaRepository.findById(id).orElseThrow(() -> new RuntimeException("No existe la auditoría de entrada/salida "));
+        return id == null ? null : salidaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la auditoría de entrada/salida "));
     }
 
     @Override
@@ -54,14 +57,14 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
     @Override
     public ReportesAuditoriasDtoResponse actualizar(ReportesAuditoriasDtoRequest dto, Long id) {
-        ReportesAuditorias r = repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte "));
+        ReportesAuditorias r = repository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el reporte "));
         mapper.updateEntityFromDto(r, dto, salidaEntrada(dto.salidaEntradaId()), transferencia(dto.transferenciaId()));
         return respuesta(repository.save(r));
     }
 
     @Override
     public void eliminar(Long id) {
-        repository.delete(repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte ")));
+        repository.delete(repository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el reporte ")));
     }
 
     @Override
@@ -71,6 +74,6 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
     @Override
     public ReportesAuditoriasDtoResponse buscarId(Long id) {
-        return respuesta(repository.findById(id).orElseThrow(() -> new RuntimeException("No existe el reporte ")));
+        return respuesta(repository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el reporte ")));
     }
 }
