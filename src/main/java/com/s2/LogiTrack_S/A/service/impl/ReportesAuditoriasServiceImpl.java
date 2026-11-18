@@ -9,7 +9,7 @@ import com.s2.LogiTrack_S.A.repository.*;
 import com.s2.LogiTrack_S.A.service.AuditoriaSalidaEntradaService;
 import com.s2.LogiTrack_S.A.service.AuditoriaTransferenciaService;
 import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
-import com.s2.LogiTrack_S.A.validation.ReportesAuditoriaValidation;
+import com.s2.LogiTrack_S.A.validation.ReportesAuditoriasValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
     private final ReportesAuditoriasRepository repository;
     private final AuditoriaTransferenciaRepository transferenciaRepository;
     private final AuditoriaSalidaEntradaRepository salidaRepository;
-    private final ReportesAuditoriaValidation validation;
+    private final ReportesAuditoriasValidation validation;
 
     /*NOS AYUDA A NO TENER QUE REPETIR LO MISMO SIEMPRE*/
     private ReportesAuditoriasDtoResponse respuesta(ReportesAuditorias r) {

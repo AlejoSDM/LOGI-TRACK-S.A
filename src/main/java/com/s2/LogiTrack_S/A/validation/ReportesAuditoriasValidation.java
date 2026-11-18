@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
-public class ReportesAuditoriaValidation {
+public class ReportesAuditoriasValidation {
 
     public void validarAuditoria(Long transferenciaId, Long salidaEntradaId) {
 
