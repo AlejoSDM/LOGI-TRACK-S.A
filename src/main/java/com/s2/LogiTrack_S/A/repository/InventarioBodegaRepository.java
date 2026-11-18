@@ -21,6 +21,9 @@ public interface InventarioBodegaRepository
     boolean existsByBodegaId_IdAndProductoId_Id(
             Long bodegaId, Long productoId);
 
+    boolean existsByBodegaId_IdAndProductoId_IdAndIdNot(
+            Long bodegaId, Long productoId, Long id);
+
     boolean existsByProductoId_Id(Long productoId);
 
     @Query("SELECT COALESCE(SUM(i.stock), 0) FROM InventarioBodega i WHERE i.bodegaId.id = :bodegaId")
