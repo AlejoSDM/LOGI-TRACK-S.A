@@ -5,6 +5,7 @@ import com.s2.LogiTrack_S.A.dto.response.AuditoriaSalidaEntradaDtoResponse;
 import com.s2.LogiTrack_S.A.dto.response.BodegaDtoResponse;
 import com.s2.LogiTrack_S.A.dto.response.ProductosDtoResponse;
 import com.s2.LogiTrack_S.A.dto.response.UsuarioDtoResponse;
+import com.s2.LogiTrack_S.A.exception.BusinessRuleException;
 import com.s2.LogiTrack_S.A.exception.DatabaseRuleException;
 import com.s2.LogiTrack_S.A.mapper.*;
 import com.s2.LogiTrack_S.A.model.*;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,6 +39,16 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
     private final InventarioBodegaRepository inventarioBodegaRepository;
 
     private final AuditoriaSalidaEntradaValidation auditoriaValidation;
+
+
+    // CONVERTIR AUDITORÍA A DTO PARA FILTRAR
+    private AuditoriaSalidaEntradaDtoResponse respuesta(AuditoriaSalidaEntrada a) {
+        UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(a.getUsuarioId(), personaMapper.entityToDto(a.getUsuarioId().getPersonaId()));
+        BodegaDtoResponse bodegaDto = bodegaMapper.entityToDto(a.getBodegaId(), ciudadMapper.entityToDto(a.getBodegaId().getCiudadId()), usuarioMapper.entityToDto(a.getBodegaId().getUsuarioId(), personaMapper.entityToDto(a.getBodegaId().getUsuarioId().getPersonaId())));
+        ProductosDtoResponse productoDto = productosMapper.entityToDto(a.getProductoId(), marcaMapper.entityToDto(a.getProductoId().getMarcaId()), categoriaMapper.entityToDto(a.getProductoId().getCategoriaId()));
+        return auditoriaSalidaEntradaMapper.entityToDto(a, usuarioDto, bodegaDto, productoDto);
+    }
+
 
     @Override
     @Transactional
@@ -73,5 +85,53 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
                 usuarioMapper.entityToDto(a.getUsuarioId(), personaMapper.entityToDto(a.getUsuarioId().getPersonaId())),
                 bodegaMapper.entityToDto(a.getBodegaId(), ciudadMapper.entityToDto(a.getBodegaId().getCiudadId()), usuarioMapper.entityToDto(a.getBodegaId().getUsuarioId(), personaMapper.entityToDto(a.getBodegaId().getUsuarioId().getPersonaId()))),
                 productosMapper.entityToDto(a.getProductoId(), marcaMapper.entityToDto(a.getProductoId().getMarcaId()), categoriaMapper.entityToDto(a.getProductoId().getCategoriaId())));
+    }
+
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorFecha(LocalDateTime desde, LocalDateTime hasta) {
+        auditoriaValidation.validarFechas(desde, hasta);
+        return auditoriaSalidaEntradaRepository.findByFechaBetween(desde, hasta).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorUsuario(Long usuarioId) {
+        auditoriaValidation.validarId(usuarioId);
+        return auditoriaSalidaEntradaRepository.findByUsuarioId_Id(usuarioId).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorTipoAccion(
+            AuditoriaSalidaEntrada.TipoAccion tipoAccion) {
+        if (tipoAccion == null) {
+            throw new BusinessRuleException("Debe proporcionar un tipo de acción");
+        }
+        return auditoriaSalidaEntradaRepository.findByTipoAccion(tipoAccion).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorUsuarioYFecha(Long usuarioId, LocalDateTime desde, LocalDateTime hasta) {
+        auditoriaValidation.validarId(usuarioId);
+        auditoriaValidation.validarFechas(desde, hasta);
+        return auditoriaSalidaEntradaRepository.findByUsuarioId_IdAndFechaBetween(usuarioId, desde, hasta).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorBodega(Long bodegaId) {
+        auditoriaValidation.validarId(bodegaId);
+        return auditoriaSalidaEntradaRepository.findByBodegaId_Id(bodegaId).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorProducto(Long productoId) {
+        auditoriaValidation.validarId(productoId);
+        return auditoriaSalidaEntradaRepository.findByProductoId_Id(productoId).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaSalidaEntradaDtoResponse> buscarPorBodegaYFecha(Long bodegaId, LocalDateTime desde, LocalDateTime hasta) {
+        auditoriaValidation.validarId(bodegaId);
+        auditoriaValidation.validarFechas(desde, hasta);
+        return auditoriaSalidaEntradaRepository.findByBodegaId_IdAndFechaBetween(bodegaId, desde, hasta).stream().map(this::respuesta).toList();
     }
 }

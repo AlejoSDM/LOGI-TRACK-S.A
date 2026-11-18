@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -36,6 +37,15 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
     private final AuditoriaTransferenciaValidation auditoriaValidation;
     private final InventarioBodegaRepository inventarioBodegaRepository;
 
+
+    // CONVERTIR TRANSFERENCIA A DTO PARA QUE LOS FILTROS NO SE VUELVAN TODOS REPETITIVOS
+    private AuditoriaTransferenciaDtoResponse respuesta(AuditoriaTransferencia a) {
+        UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(a.getUsuarioId(), personaMapper.entityToDto(a.getUsuarioId().getPersonaId()));
+        BodegaDtoResponse bodegaOrigenDto = bodegaMapper.entityToDto(a.getBodegaOrigenId(), ciudadMapper.entityToDto(a.getBodegaOrigenId().getCiudadId()), usuarioMapper.entityToDto(a.getBodegaOrigenId().getUsuarioId(), personaMapper.entityToDto(a.getBodegaOrigenId().getUsuarioId().getPersonaId())));
+        BodegaDtoResponse bodegaDestinoDto = bodegaMapper.entityToDto(a.getBodegaDestinoId(), ciudadMapper.entityToDto(a.getBodegaDestinoId().getCiudadId()), usuarioMapper.entityToDto(a.getBodegaDestinoId().getUsuarioId(), personaMapper.entityToDto(a.getBodegaDestinoId().getUsuarioId().getPersonaId())));
+        ProductosDtoResponse productoDto = productosMapper.entityToDto(a.getProductoId(), marcaMapper.entityToDto(a.getProductoId().getMarcaId()), categoriaMapper.entityToDto(a.getProductoId().getCategoriaId()));
+        return auditoriaTransferenciaMapper.entityToDto(a, usuarioDto, bodegaOrigenDto, bodegaDestinoDto, productoDto);
+    }
     @Override
     @Transactional
     public AuditoriaTransferenciaDtoResponse guardar(AuditoriaTransferenciaDtoRequest dto) {
@@ -85,5 +95,48 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
                 bodegaMapper.entityToDto(a.getBodegaOrigenId(), ciudadMapper.entityToDto(a.getBodegaOrigenId().getCiudadId()), usuarioMapper.entityToDto(a.getBodegaOrigenId().getUsuarioId(), personaMapper.entityToDto(a.getBodegaOrigenId().getUsuarioId().getPersonaId()))),
                 bodegaMapper.entityToDto(a.getBodegaDestinoId(), ciudadMapper.entityToDto(a.getBodegaDestinoId().getCiudadId()), usuarioMapper.entityToDto(a.getBodegaDestinoId().getUsuarioId(), personaMapper.entityToDto(a.getBodegaDestinoId().getUsuarioId().getPersonaId()))),
                 productosMapper.entityToDto(a.getProductoId(), marcaMapper.entityToDto(a.getProductoId().getMarcaId()), categoriaMapper.entityToDto(a.getProductoId().getCategoriaId())));
+    }
+
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorFecha(LocalDateTime desde, LocalDateTime hasta) {
+        auditoriaValidation.validarFechas(desde, hasta);
+        return auditoriaTransferenciaRepository.findByFechaBetween(desde, hasta).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorUsuario(Long usuarioId) {
+        auditoriaValidation.validarId(usuarioId);
+        return auditoriaTransferenciaRepository.findByUsuarioId_Id(usuarioId).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorBodegas(Long bodegaId) {
+        auditoriaValidation.validarId(bodegaId);
+        return auditoriaTransferenciaRepository.findByBodegaOrigenId_IdOrBodegaDestinoId_Id(bodegaId, bodegaId).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorUsuarioYFecha(Long usuarioId, LocalDateTime desde, LocalDateTime hasta) {
+        auditoriaValidation.validarId(usuarioId);
+        auditoriaValidation.validarFechas(desde, hasta);
+        return auditoriaTransferenciaRepository.findByUsuarioId_IdAndFechaBetween(usuarioId, desde, hasta).stream().map(this::respuesta).toList();
+    }
+
+
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorProducto(Long productoId) {
+        auditoriaValidation.validarId(productoId);
+        return auditoriaTransferenciaRepository.findByProductoId_Id(productoId).stream().map(this::respuesta).toList();
+    }
+
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorBodegaOrigen(Long bodegaId) {
+        auditoriaValidation.validarId(bodegaId);
+        return auditoriaTransferenciaRepository.findByBodegaOrigenId_Id(bodegaId).stream().map(this::respuesta).toList();
+    }
+    @Override
+    public List<AuditoriaTransferenciaDtoResponse> buscarPorBodegaDestino(Long bodegaId) {
+        auditoriaValidation.validarId(bodegaId);
+        return auditoriaTransferenciaRepository.findByBodegaDestinoId_Id(bodegaId).stream().map(this::respuesta).toList();
     }
 }
