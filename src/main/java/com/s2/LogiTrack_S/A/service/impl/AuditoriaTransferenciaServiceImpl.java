@@ -7,12 +7,11 @@ import com.s2.LogiTrack_S.A.dto.response.ProductosDtoResponse;
 import com.s2.LogiTrack_S.A.dto.response.UsuarioDtoResponse;
 import com.s2.LogiTrack_S.A.exception.DatabaseRuleException;
 import com.s2.LogiTrack_S.A.mapper.*;
-import com.s2.LogiTrack_S.A.model.AuditoriaTransferencia;
-import com.s2.LogiTrack_S.A.model.Bodega;
-import com.s2.LogiTrack_S.A.model.Productos;
-import com.s2.LogiTrack_S.A.model.Usuario;
+import com.s2.LogiTrack_S.A.model.*;
 import com.s2.LogiTrack_S.A.repository.*;
 import com.s2.LogiTrack_S.A.service.AuditoriaTransferenciaService;
+import com.s2.LogiTrack_S.A.validation.AuditoriaTransferenciaValidation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,42 +33,38 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
     private final UsuarioRepository usuarioRepository;
     private final BodegaRepository bodegaRepository;
     private final ProductosRepository productosRepository;
+    private final AuditoriaTransferenciaValidation auditoriaValidation;
+    private final InventarioBodegaRepository inventarioBodegaRepository;
 
     @Override
+    @Transactional
     public AuditoriaTransferenciaDtoResponse guardar(AuditoriaTransferenciaDtoRequest dto) {
         Usuario u = usuarioRepository.findById(dto.usuarioId()).orElseThrow(() -> new DatabaseRuleException("No existe el usuario"));
         Bodega origen = bodegaRepository.findById(dto.bodegaOrigenId()).orElseThrow(() -> new DatabaseRuleException("No existe la bodega de origen"));
         Bodega destino = bodegaRepository.findById(dto.bodegaDestinoId()).orElseThrow(() -> new DatabaseRuleException("No existe la bodega de destino"));
         Productos p = productosRepository.findById(dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe el producto"));
+        // VALIDACIONES
+        auditoriaValidation.validarUsuario(u, origen);
+        auditoriaValidation.validarBodegas(dto.bodegaOrigenId(), dto.bodegaDestinoId());
+        // BUSCAR INVENTARIO DE ORIGEN
+        InventarioBodega inventarioOrigen = inventarioBodegaRepository.findByBodegaId_IdAndProductoId_Id(dto.bodegaOrigenId(), dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe inventario del producto en la bodega de origen"));
+        // BUSCAR INVENTARIO DE DESTINO
+        InventarioBodega inventarioDestino = inventarioBodegaRepository.findByBodegaId_IdAndProductoId_Id(dto.bodegaDestinoId(), dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe inventario del producto en la bodega de destino"));
+        auditoriaValidation.validarCantidad(dto.cantidad());
+        auditoriaValidation.validarStock(inventarioOrigen, dto.cantidad());
+        auditoriaValidation.validarCapacidad(destino, dto.cantidad());
+        // MODIFICAR STOCK
+        auditoriaValidation.modificarStock(inventarioOrigen, inventarioDestino, dto.cantidad());
+        inventarioBodegaRepository.save(inventarioOrigen);
+        inventarioBodegaRepository.save(inventarioDestino);
+        // CREAR AUDITORÍA
         AuditoriaTransferencia a = auditoriaTransferenciaMapper.dtoToEntity(dto, u, origen, destino, p);
         UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(u, personaMapper.entityToDto(u.getPersonaId()));
         BodegaDtoResponse bodegaOrigenDto = bodegaMapper.entityToDto(origen, ciudadMapper.entityToDto(origen.getCiudadId()), usuarioMapper.entityToDto(origen.getUsuarioId(), personaMapper.entityToDto(origen.getUsuarioId().getPersonaId())));
         BodegaDtoResponse bodegaDestinoDto = bodegaMapper.entityToDto(destino, ciudadMapper.entityToDto(destino.getCiudadId()), usuarioMapper.entityToDto(destino.getUsuarioId(), personaMapper.entityToDto(destino.getUsuarioId().getPersonaId())));
         ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
-        return auditoriaTransferenciaMapper.entityToDto(auditoriaTransferenciaRepository.save(a), usuarioDto, bodegaOrigenDto, bodegaDestinoDto, productoDto);
-    }
-
-
-    @Override
-    public AuditoriaTransferenciaDtoResponse actualizar(AuditoriaTransferenciaDtoRequest dto, Long id) {
-        AuditoriaTransferencia a = auditoriaTransferenciaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la transferencia"));
-        Usuario u = usuarioRepository.findById(dto.usuarioId()).orElseThrow(() -> new DatabaseRuleException("No existe el usuario"));
-        Bodega origen = bodegaRepository.findById(dto.bodegaOrigenId()).orElseThrow(() -> new DatabaseRuleException("No existe la bodega de origen"));
-        Bodega destino = bodegaRepository.findById(dto.bodegaDestinoId()).orElseThrow(() -> new DatabaseRuleException("No existe la bodega de destino"));
-        Productos p = productosRepository.findById(dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe el producto"));
-        UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(u, personaMapper.entityToDto(u.getPersonaId()));
-        BodegaDtoResponse bodegaOrigenDto = bodegaMapper.entityToDto(origen, ciudadMapper.entityToDto(origen.getCiudadId()), usuarioMapper.entityToDto(origen.getUsuarioId(), personaMapper.entityToDto(origen.getUsuarioId().getPersonaId())));
-        BodegaDtoResponse bodegaDestinoDto = bodegaMapper.entityToDto(destino, ciudadMapper.entityToDto(destino.getCiudadId()), usuarioMapper.entityToDto(destino.getUsuarioId(), personaMapper.entityToDto(destino.getUsuarioId().getPersonaId())));
-        ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
-        auditoriaTransferenciaMapper.updateEntityFromDto(a, dto, u, origen, destino, p);
         return auditoriaTransferenciaMapper.entityToDto(auditoriaTransferenciaRepository.save(a), usuarioDto, bodegaOrigenDto, bodegaDestinoDto, productoDto
         );
-    }
-
-    @Override
-    public void eliminar(Long id) {
-       AuditoriaTransferencia a = auditoriaTransferenciaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe la transferencia"));
-         auditoriaTransferenciaRepository.delete(a);
     }
 
     @Override
