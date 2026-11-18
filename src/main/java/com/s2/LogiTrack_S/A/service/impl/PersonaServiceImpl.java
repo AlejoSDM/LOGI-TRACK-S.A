@@ -53,4 +53,12 @@ public class PersonaServiceImpl implements PersonaService {
         return personaMapper.entityToDto(p);
     }
 
+    @Override
+    public List<PersonaDtoResponse> buscarPorNombre(String nombre) {
+        return personaRepository.findByNombreContainingIgnoreCase(nombre)
+                .stream()
+                .map(personaMapper::entityToDto)
+                .toList();
+    }
+
 }
