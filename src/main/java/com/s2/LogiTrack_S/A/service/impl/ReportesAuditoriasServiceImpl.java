@@ -9,9 +9,11 @@ import com.s2.LogiTrack_S.A.repository.*;
 import com.s2.LogiTrack_S.A.service.AuditoriaSalidaEntradaService;
 import com.s2.LogiTrack_S.A.service.AuditoriaTransferenciaService;
 import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
+import com.s2.LogiTrack_S.A.validation.ReportesAuditoriaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,6 +25,7 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
     private final ReportesAuditoriasRepository repository;
     private final AuditoriaTransferenciaRepository transferenciaRepository;
     private final AuditoriaSalidaEntradaRepository salidaRepository;
+    private final ReportesAuditoriaValidation validation;
 
     /*NOS AYUDA A NO TENER QUE REPETIR LO MISMO SIEMPRE*/
     private ReportesAuditoriasDtoResponse respuesta(ReportesAuditorias r) {
@@ -51,12 +54,15 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
 
     @Override
     public ReportesAuditoriasDtoResponse guardar(ReportesAuditoriasDtoRequest dto) {
+        validation.validarAuditoria(dto.transferenciaId(), dto.salidaEntradaId());
         ReportesAuditorias r = mapper.dtoToEntity(dto, salidaEntrada(dto.salidaEntradaId()), transferencia(dto.transferenciaId()));
         return respuesta(repository.save(r));
     }
 
     @Override
     public ReportesAuditoriasDtoResponse actualizar(ReportesAuditoriasDtoRequest dto, Long id) {
+        validation.validarId(id);
+        validation.validarAuditoria(dto.transferenciaId(), dto.salidaEntradaId());
         ReportesAuditorias r = repository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el reporte "));
         mapper.updateEntityFromDto(r, dto, salidaEntrada(dto.salidaEntradaId()), transferencia(dto.transferenciaId()));
         return respuesta(repository.save(r));
@@ -75,5 +81,41 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
     @Override
     public ReportesAuditoriasDtoResponse buscarId(Long id) {
         return respuesta(repository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el reporte ")));
+    }
+
+    @Override
+    public List<ReportesAuditoriasDtoResponse> buscarPorFecha(
+            LocalDateTime desde, LocalDateTime hasta) {
+
+        validation.validarFechas(desde, hasta);
+
+        return repository.findByFechaBetween(desde, hasta)
+                .stream()
+                .map(this::respuesta)
+                .toList();
+    }
+
+    // BUSCAR REPORTES POR TRANSFERENCIA
+    @Override
+    public List<ReportesAuditoriasDtoResponse> buscarPorTransferencia(Long transferenciaId) {
+
+        validation.validarId(transferenciaId);
+
+        return repository.findByTransferenciaId_Id(transferenciaId)
+                .stream()
+                .map(this::respuesta)
+                .toList();
+    }
+
+    // BUSCAR REPORTES POR ENTRADA O SALIDA
+    @Override
+    public List<ReportesAuditoriasDtoResponse> buscarPorSalidaEntrada(Long salidaEntradaId) {
+
+        validation.validarId(salidaEntradaId);
+
+        return repository.findBySalidaEntradaId_Id(salidaEntradaId)
+                .stream()
+                .map(this::respuesta)
+                .toList();
     }
 }
