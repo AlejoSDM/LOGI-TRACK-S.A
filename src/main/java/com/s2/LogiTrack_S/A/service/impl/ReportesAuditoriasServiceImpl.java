@@ -86,36 +86,21 @@ public class ReportesAuditoriasServiceImpl implements ReportesAuditoriasService 
     @Override
     public List<ReportesAuditoriasDtoResponse> buscarPorFecha(
             LocalDateTime desde, LocalDateTime hasta) {
-
         validation.validarFechas(desde, hasta);
-
-        return repository.findByFechaBetween(desde, hasta)
-                .stream()
-                .map(this::respuesta)
-                .toList();
+        return repository.findByFechaBetween(desde, hasta).stream().map(this::respuesta).toList();
     }
 
     // BUSCAR REPORTES POR TRANSFERENCIA
     @Override
     public List<ReportesAuditoriasDtoResponse> buscarPorTransferencia(Long transferenciaId) {
-
         validation.validarId(transferenciaId);
-
-        return repository.findByTransferenciaId_Id(transferenciaId)
-                .stream()
-                .map(this::respuesta)
-                .toList();
+        return repository.findByTransferenciaId_Id(transferenciaId).stream().map(this::respuesta).toList();
     }
 
     // BUSCAR REPORTES POR ENTRADA O SALIDA
     @Override
     public List<ReportesAuditoriasDtoResponse> buscarPorSalidaEntrada(Long salidaEntradaId) {
-
         validation.validarId(salidaEntradaId);
-
-        return repository.findBySalidaEntradaId_Id(salidaEntradaId)
-                .stream()
-                .map(this::respuesta)
-                .toList();
+        return repository.findBySalidaEntradaId_Id(salidaEntradaId).stream().map(this::respuesta).toList();
     }
 }
