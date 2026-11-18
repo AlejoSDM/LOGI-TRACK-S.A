@@ -66,4 +66,27 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioMapper.entityToDto(usuario, personaMapper.entityToDto(usuario.getPersonaId()));
     }
 
+    @Override
+    public List<UsuarioDtoResponse> buscarPorRol(Usuario.Rol rol) {
+        return usuarioRepository.findByRol(rol)
+                .stream().map
+                        (usuario -> usuarioMapper.entityToDto(usuario,
+                        personaMapper.entityToDto(usuario.getPersonaId()))).toList();
+    }
+
+    @Override
+    public List<UsuarioDtoResponse> buscarPorEstado(Boolean estado) {
+        return usuarioRepository.findByEstado(estado)
+                .stream().map
+                        (usuario -> usuarioMapper.entityToDto(usuario,
+                        personaMapper.entityToDto(usuario.getPersonaId()))).toList();
+    }
+
+    @Override
+    public List<UsuarioDtoResponse> buscarPorRolYEstado(Usuario.Rol rol, Boolean estado) {
+        return usuarioRepository.findByRolAndEstado(rol, estado).stream().map
+                        (usuario -> usuarioMapper.entityToDto(usuario,
+                        personaMapper.entityToDto(usuario.getPersonaId()))).toList();
+    }
+
 }
