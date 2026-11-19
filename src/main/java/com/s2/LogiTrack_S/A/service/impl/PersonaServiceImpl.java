@@ -7,6 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.PersonaMapper;
 import com.s2.LogiTrack_S.A.model.Persona;
 import com.s2.LogiTrack_S.A.repository.PersonaRepository;
 import com.s2.LogiTrack_S.A.service.PersonaService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.PersonaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class PersonaServiceImpl implements PersonaService {
     private final PersonaMapper personaMapper;
     private final PersonaRepository personaRepository;
     private final PersonaValidation personaValidation;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
     public PersonaDtoResponse guardar(PersonaDtoRequest dto) {

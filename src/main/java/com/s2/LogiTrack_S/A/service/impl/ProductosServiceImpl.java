@@ -15,7 +15,9 @@ import com.s2.LogiTrack_S.A.repository.ProductosRepository;
 import com.s2.LogiTrack_S.A.repository.MarcaRepository;
 import com.s2.LogiTrack_S.A.repository.CategoriaProductoRepository;
 import com.s2.LogiTrack_S.A.service.ProductosService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.ProductosValidation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +34,10 @@ public class ProductosServiceImpl implements ProductosService {
     private final MarcaRepository marcaRepository;
     private final CategoriaProductoRepository categoriaRepository;
     private final ProductosValidation productosValidation;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
+    @Transactional
     public ProductosDtoResponse guardar(ProductosDtoRequest dto) {
         Marca m = marcaRepository.findById(dto.marcaId()).orElseThrow(() -> new DatabaseRuleException("No existe la marca "));
         CategoriaProducto c = categoriaRepository.findById(dto.categoriaId()).orElseThrow(() -> new DatabaseRuleException("No existe la categoría "));
@@ -41,11 +45,18 @@ public class ProductosServiceImpl implements ProductosService {
         Productos productos = productosMapper.dtoToEntity(dto, m, c);
         MarcaDtoResponse marcaDtoResponse = marcaMapper.entityToDto(m);
         CategoriaProductoDtoResponse categoriaDtoResponse = categoriaMapper.entityToDto(c);
-        return productosMapper.entityToDto(productosRepository.save(productos), marcaDtoResponse, categoriaDtoResponse);
-
+        Productos guardado = productosRepository.save(productos);
+        reportesAuditoriasService.registrar(
+                "PRODUCTO",
+                "CREAR",
+                guardado.getId(),
+                "Se creó el producto: " + guardado.getNombre()
+        );
+        return productosMapper.entityToDto(guardado, marcaDtoResponse, categoriaDtoResponse);
     }
 
     @Override
+    @Transactional
     public ProductosDtoResponse actualizar(ProductosDtoRequest dto, Long id) {
        Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto: "));
        Marca m = marcaRepository.findById(dto.marcaId()).orElseThrow(() -> new DatabaseRuleException("No existe la marca "));
@@ -54,14 +65,30 @@ public class ProductosServiceImpl implements ProductosService {
        MarcaDtoResponse marcaDtoResponse = marcaMapper.entityToDto(m);
        CategoriaProductoDtoResponse categoriaDtoResponse = categoriaMapper.entityToDto(c);
        productosMapper.updateEntityFromDto(p, dto, m, c);
-       return productosMapper.entityToDto(productosRepository.save(p), marcaDtoResponse, categoriaDtoResponse);
+        Productos actualizado = productosRepository.save(p);
+        reportesAuditoriasService.registrar(
+                "PRODUCTO",
+                "MODIFICAR",
+                actualizado.getId(),
+                "Se modificó el producto: " + actualizado.getNombre()
+        );
+        return productosMapper.entityToDto(actualizado, marcaDtoResponse, categoriaDtoResponse);
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
         Productos p = productosRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("No existe el producto: "));
         productosValidation.validarEliminar(id);
+        Long productoId = p.getId();
+        String nombreProducto = p.getNombre();
         productosRepository.delete(p);
+        reportesAuditoriasService.registrar(
+                "PRODUCTO",
+                "ELIMINAR",
+                productoId,
+                "Se eliminó el producto: " + nombreProducto
+        );
     }
 
     @Override

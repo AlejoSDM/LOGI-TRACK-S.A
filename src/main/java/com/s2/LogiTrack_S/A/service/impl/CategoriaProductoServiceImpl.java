@@ -7,6 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.CategoriaProductoMapper;
 import com.s2.LogiTrack_S.A.model.CategoriaProducto;
 import com.s2.LogiTrack_S.A.repository.CategoriaProductoRepository;
 import com.s2.LogiTrack_S.A.service.CategoriaProductoService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.CategoriaProductoValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class CategoriaProductoServiceImpl implements CategoriaProductoService {
     private final CategoriaProductoMapper categoriaProductoMapper;
     private final CategoriaProductoRepository categoriaProductoRepository;
     private final CategoriaProductoValidation categoriaProductoValidation;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
     public CategoriaProductoDtoResponse guardar(CategoriaProductoDtoRequest dto) {

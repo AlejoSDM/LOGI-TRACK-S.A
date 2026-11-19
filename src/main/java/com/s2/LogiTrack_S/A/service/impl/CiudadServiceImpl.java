@@ -7,6 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.CiudadMapper;
 import com.s2.LogiTrack_S.A.model.Ciudad;
 import com.s2.LogiTrack_S.A.repository.CiudadRepository;
 import com.s2.LogiTrack_S.A.service.CiudadService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.CiudadValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class CiudadServiceImpl implements CiudadService {
     private final CiudadMapper ciudadMapper;
     private final CiudadRepository ciudadRepository;
     private final CiudadValidation ciudadValidation;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
     public CiudadDtoResponse guardar(CiudadDtoRequest dto) {

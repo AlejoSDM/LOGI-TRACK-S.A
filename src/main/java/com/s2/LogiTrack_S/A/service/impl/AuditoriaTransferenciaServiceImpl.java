@@ -10,6 +10,7 @@ import com.s2.LogiTrack_S.A.mapper.*;
 import com.s2.LogiTrack_S.A.model.*;
 import com.s2.LogiTrack_S.A.repository.*;
 import com.s2.LogiTrack_S.A.service.AuditoriaTransferenciaService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.AuditoriaTransferenciaValidation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
     private final AuditoriaTransferenciaValidation auditoriaValidation;
     private final InventarioBodegaRepository inventarioBodegaRepository;
     private final ReportesAuditoriasRepository reportesAuditoriasRepository;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
 
     // CONVERTIR TRANSFERENCIA A DTO PARA QUE LOS FILTROS NO SE VUELVAN TODOS REPETITIVOS
@@ -75,10 +77,15 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
         BodegaDtoResponse bodegaDestinoDto = bodegaMapper.entityToDto(destino, ciudadMapper.entityToDto(destino.getCiudadId()), usuarioMapper.entityToDto(destino.getUsuarioId(), personaMapper.entityToDto(destino.getUsuarioId().getPersonaId())));
         ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
         AuditoriaTransferencia guardada = auditoriaTransferenciaRepository.save(a);
-        ReportesAuditorias reporte = new ReportesAuditorias();
-        reporte.setFecha(LocalDateTime.now());
-        reporte.setTransferenciaId(guardada);
-        reportesAuditoriasRepository.save(reporte);
+        reportesAuditoriasService.registrar(
+                "INVENTARIO",
+                "TRANSFERENCIA",
+                guardada.getId(),
+                "Transferencia de " + dto.cantidad()
+                        + " unidades del producto " + p.getNombre()
+                        + " desde la bodega " + origen.getNombre()
+                        + " hacia la bodega " + destino.getNombre()
+        );
         return auditoriaTransferenciaMapper.entityToDto(guardada, usuarioDto, bodegaOrigenDto, bodegaDestinoDto, productoDto);
     }
 

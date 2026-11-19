@@ -11,6 +11,7 @@ import com.s2.LogiTrack_S.A.mapper.*;
 import com.s2.LogiTrack_S.A.model.*;
 import com.s2.LogiTrack_S.A.repository.*;
 import com.s2.LogiTrack_S.A.service.AuditoriaSalidaEntradaService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.AuditoriaSalidaEntradaValidation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
     private final InventarioBodegaRepository inventarioBodegaRepository;
     private final ReportesAuditoriasRepository reportesAuditoriasRepository;
     private final AuditoriaSalidaEntradaValidation auditoriaValidation;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
 
     // CONVERTIR AUDITORÍA A DTO PARA FILTRAR
@@ -69,10 +71,15 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
         BodegaDtoResponse bodegaDto = bodegaMapper.entityToDto(b, ciudadMapper.entityToDto(b.getCiudadId()), usuarioMapper.entityToDto(b.getUsuarioId(), personaMapper.entityToDto(b.getUsuarioId().getPersonaId())));
         ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
         AuditoriaSalidaEntrada guardada = auditoriaSalidaEntradaRepository.save(a);
-        ReportesAuditorias reporte = new ReportesAuditorias();
-        reporte.setFecha(LocalDateTime.now());
-        reporte.setSalidaEntradaId(guardada);
-        reportesAuditoriasRepository.save(reporte);
+        reportesAuditoriasService.registrar(
+                "INVENTARIO",
+                dto.tipoAccion().name(),
+                guardada.getId(),
+                "Movimiento " + dto.tipoAccion().name()
+                        + " de " + dto.cantidad()
+                        + " unidades del producto " + p.getNombre()
+                        + " en la bodega " + b.getNombre()
+        );
         return auditoriaSalidaEntradaMapper.entityToDto(guardada, usuarioDto, bodegaDto, productoDto);
     }
 

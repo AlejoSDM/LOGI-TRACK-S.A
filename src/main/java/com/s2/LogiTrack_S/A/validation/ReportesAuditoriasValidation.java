@@ -1,36 +1,63 @@
+
 package com.s2.LogiTrack_S.A.validation;
 
 import com.s2.LogiTrack_S.A.exception.BusinessRuleException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Component
 public class ReportesAuditoriasValidation {
 
-    public void validarAuditoria(Long transferenciaId, Long salidaEntradaId) {
+    private static final Set<String> MODULOS = Set.of(
+            "PRODUCTO",
+            "MARCA",
+            "CATEGORIA",
+            "BODEGA",
+            "CIUDAD",
+            "USUARIO",
+            "INVENTARIO"
+    );
 
-        boolean tieneTransferencia = transferenciaId != null;
-        boolean tieneSalidaEntrada = salidaEntradaId != null;
+    private static final Set<String> ACCIONES = Set.of(
+            "CREAR",
+            "MODIFICAR",
+            "ELIMINAR",
+            "ENTRADA",
+            "SALIDA",
+            "TRANSFERENCIA",
+            "ACTIVAR",
+            "DESACTIVAR"
+    );
 
-        if (tieneTransferencia == tieneSalidaEntrada) {
+    public void validarRegistro(
+            String modulo,
+            String tipoAccion,
+            String descripcion
+    ) {
+
+        if (modulo == null || !MODULOS.contains(modulo)) {
             throw new BusinessRuleException(
-                    "El reporte debe estar asociado a una transferencia o a una auditoría de entrada/salida, pero no a ambas"
+                    "El módulo de auditoría no es válido"
             );
         }
-    }
 
-    public void validarFechas(LocalDateTime desde, LocalDateTime hasta) {
-
-        if (desde == null || hasta == null) {
+        if (tipoAccion == null || !ACCIONES.contains(tipoAccion)) {
             throw new BusinessRuleException(
-                    "Debe proporcionar una fecha inicial y una fecha final"
+                    "El tipo de acción no es válido"
             );
         }
 
-        if (desde.isAfter(hasta)) {
+        if (descripcion == null || descripcion.isBlank()) {
             throw new BusinessRuleException(
-                    "La fecha inicial no puede ser posterior a la fecha final"
+                    "La descripción no puede estar vacía"
+            );
+        }
+
+        if (descripcion.length() > 500) {
+            throw new BusinessRuleException(
+                    "La descripción no puede superar los 500 caracteres"
             );
         }
     }
@@ -40,6 +67,24 @@ public class ReportesAuditoriasValidation {
         if (id == null || id <= 0) {
             throw new BusinessRuleException(
                     "El ID debe ser un número positivo"
+            );
+        }
+    }
+
+    public void validarFechas(
+            LocalDateTime desde,
+            LocalDateTime hasta
+    ) {
+
+        if (desde == null || hasta == null) {
+            throw new BusinessRuleException(
+                    "Debe proporcionar ambas fechas"
+            );
+        }
+
+        if (desde.isAfter(hasta)) {
+            throw new BusinessRuleException(
+                    "La fecha inicial no puede ser posterior a la final"
             );
         }
     }

@@ -16,6 +16,7 @@ import com.s2.LogiTrack_S.A.repository.BodegaRepository;
 import com.s2.LogiTrack_S.A.repository.CiudadRepository;
 import com.s2.LogiTrack_S.A.repository.UsuarioRepository;
 import com.s2.LogiTrack_S.A.service.BodegaService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.BodegaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class BodegaServiceImpl implements BodegaService {
     private final BodegaRepository bodegaRepository;
     private final CiudadRepository ciudadRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
     public BodegaDtoResponse guardar(BodegaDtoRequest dto) {

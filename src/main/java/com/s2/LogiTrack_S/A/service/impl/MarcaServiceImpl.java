@@ -7,6 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.MarcaMapper;
 import com.s2.LogiTrack_S.A.model.Marca;
 import com.s2.LogiTrack_S.A.repository.MarcaRepository;
 import com.s2.LogiTrack_S.A.service.MarcaService;
+import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.MarcaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class MarcaServiceImpl implements MarcaService {
     private final MarcaMapper marcaMapper;
     private final MarcaRepository marcaRepository;
     private final MarcaValidation marcaValidation;
+    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
     public MarcaDtoResponse guardar(MarcaDtoRequest dto) {
