@@ -17,6 +17,6 @@ public record BodegaDtoRequest(
 
         @NotNull(message = "El empleado no puede ser nulo")
         @Positive(message = "El ID del empleado debe ser un número positivo")
-        Long empleadoId
+        Long usuarioId
 ) {
 }
