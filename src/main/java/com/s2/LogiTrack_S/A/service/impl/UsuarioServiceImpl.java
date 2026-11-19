@@ -10,7 +10,6 @@ import com.s2.LogiTrack_S.A.model.Persona;
 import com.s2.LogiTrack_S.A.model.Usuario;
 import com.s2.LogiTrack_S.A.repository.PersonaRepository;
 import com.s2.LogiTrack_S.A.repository.UsuarioRepository;
-import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.service.UsuarioService;
 import com.s2.LogiTrack_S.A.validation.UsuarioValidation;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final PersonaRepository personaRepository;
     private final PersonaMapper personaMapper;
     private final UsuarioValidation usuarioValidation;
-    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
     public UsuarioDtoResponse guardar(UsuarioDtoRequest dto) {

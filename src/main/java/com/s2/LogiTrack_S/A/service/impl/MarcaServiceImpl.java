@@ -9,6 +9,7 @@ import com.s2.LogiTrack_S.A.repository.MarcaRepository;
 import com.s2.LogiTrack_S.A.service.MarcaService;
 import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.MarcaValidation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,27 +26,50 @@ public class MarcaServiceImpl implements MarcaService {
     private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
+    @Transactional
     public MarcaDtoResponse guardar(MarcaDtoRequest dto) {
         marcaValidation.validarNombreGuardar(dto.nombreMarca());
         Marca m = marcaMapper.dtoToEntity(dto);
-        Marca marcaDtoResponse = marcaRepository.save(m);
-        return marcaMapper.entityToDto(marcaDtoResponse);
+        Marca guardada = marcaRepository.save(m);
+        reportesAuditoriasService.registrar(
+                "MARCA",
+                "CREAR",
+                guardada.getId(),
+                "Se creó la marca: " + guardada.getNombreMarca()
+        );
+        return marcaMapper.entityToDto(guardada);
     }
 
     @Override
+    @Transactional
     public MarcaDtoResponse actualizar(MarcaDtoRequest dto, Long id) {
         Marca m = marcaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Marca no encontrada: "));
         marcaValidation.validarNombreActualizar(dto.nombreMarca(), id);
         marcaMapper.updateEntityFromDto(m, dto);
         Marca marcaActualizada = marcaRepository.save(m);
+        reportesAuditoriasService.registrar(
+                "MARCA",
+                "MODIFICAR",
+                marcaActualizada.getId(),
+                "Se modificó la marca: " + marcaActualizada.getNombreMarca()
+        );
         return marcaMapper.entityToDto(marcaActualizada);
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
         Marca m = marcaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Marca no encontrada: "));
         marcaValidation.validarEliminar(id);
+        Long marcaId = m.getId();
+        String nombreMarca = m.getNombreMarca();
         marcaRepository.delete(m);
+        reportesAuditoriasService.registrar(
+                "MARCA",
+                "ELIMINAR",
+                marcaId,
+                "Se eliminó la marca: " + nombreMarca
+        );
     }
 
     @Override
