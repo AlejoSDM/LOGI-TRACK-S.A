@@ -44,18 +44,15 @@ public class SecurityConfig {
                 )
                 // Aquí defino qué endpoints son públicos y cuáles no.
                 .authorizeHttpRequests(auth -> auth
-                        // Permito acceso libre al login.
-                        // Si lo protegiera, el usuario necesitaría token para obtener token.
-                        .requestMatchers("/auth/login").permitAll()
-                        //Esta me permite acceso OPTIONS, desde el frotend, evitando el CORS
+                        .requestMatchers("/auth/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Permito endpoints públicos de persona.
-                        // Esto lo hago para mostrar diferencia entre public y private.
-                        .requestMatchers("/api/persona/public/**").permitAll()
-                        // Todo lo demás requiere autenticación.
-                        // Si no mandan token válido, no entra.
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/api/usuarios/**", "/api/solicitudes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/auditorias-salida-entrada", "/api/auditorias-transferencias").hasRole("EMPLEADO")
+                        .requestMatchers(HttpMethod.GET, "/api/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/inventarios").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers(HttpMethod.DELETE, "/api/inventarios/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
                 /*
                  * Aquí agrego mi filtro JWT antes del filtro
                  * UsernamePasswordAuthenticationFilter.
