@@ -36,6 +36,7 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
     private final ProductosRepository productosRepository;
     private final AuditoriaTransferenciaValidation auditoriaValidation;
     private final InventarioBodegaRepository inventarioBodegaRepository;
+    private final ReportesAuditoriasRepository reportesAuditoriasRepository;
 
 
     // CONVERTIR TRANSFERENCIA A DTO PARA QUE LOS FILTROS NO SE VUELVAN TODOS REPETITIVOS
@@ -73,8 +74,12 @@ public class AuditoriaTransferenciaServiceImpl implements AuditoriaTransferencia
         BodegaDtoResponse bodegaOrigenDto = bodegaMapper.entityToDto(origen, ciudadMapper.entityToDto(origen.getCiudadId()), usuarioMapper.entityToDto(origen.getUsuarioId(), personaMapper.entityToDto(origen.getUsuarioId().getPersonaId())));
         BodegaDtoResponse bodegaDestinoDto = bodegaMapper.entityToDto(destino, ciudadMapper.entityToDto(destino.getCiudadId()), usuarioMapper.entityToDto(destino.getUsuarioId(), personaMapper.entityToDto(destino.getUsuarioId().getPersonaId())));
         ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
-        return auditoriaTransferenciaMapper.entityToDto(auditoriaTransferenciaRepository.save(a), usuarioDto, bodegaOrigenDto, bodegaDestinoDto, productoDto
-        );
+        AuditoriaTransferencia guardada = auditoriaTransferenciaRepository.save(a);
+        ReportesAuditorias reporte = new ReportesAuditorias();
+        reporte.setFecha(LocalDateTime.now());
+        reporte.setTransferenciaId(guardada);
+        reportesAuditoriasRepository.save(reporte);
+        return auditoriaTransferenciaMapper.entityToDto(guardada, usuarioDto, bodegaOrigenDto, bodegaDestinoDto, productoDto);
     }
 
     @Override

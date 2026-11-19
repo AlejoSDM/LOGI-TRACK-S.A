@@ -37,7 +37,7 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
     private final BodegaRepository bodegaRepository;
     private final ProductosRepository productosRepository;
     private final InventarioBodegaRepository inventarioBodegaRepository;
-
+    private final ReportesAuditoriasRepository reportesAuditoriasRepository;
     private final AuditoriaSalidaEntradaValidation auditoriaValidation;
 
 
@@ -68,7 +68,12 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
         UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(u, personaMapper.entityToDto(u.getPersonaId()));
         BodegaDtoResponse bodegaDto = bodegaMapper.entityToDto(b, ciudadMapper.entityToDto(b.getCiudadId()), usuarioMapper.entityToDto(b.getUsuarioId(), personaMapper.entityToDto(b.getUsuarioId().getPersonaId())));
         ProductosDtoResponse productoDto = productosMapper.entityToDto(p, marcaMapper.entityToDto(p.getMarcaId()), categoriaMapper.entityToDto(p.getCategoriaId()));
-        return auditoriaSalidaEntradaMapper.entityToDto(auditoriaSalidaEntradaRepository.save(a), usuarioDto, bodegaDto, productoDto);
+        AuditoriaSalidaEntrada guardada = auditoriaSalidaEntradaRepository.save(a);
+        ReportesAuditorias reporte = new ReportesAuditorias();
+        reporte.setFecha(LocalDateTime.now());
+        reporte.setSalidaEntradaId(guardada);
+        reportesAuditoriasRepository.save(reporte);
+        return auditoriaSalidaEntradaMapper.entityToDto(guardada, usuarioDto, bodegaDto, productoDto);
     }
 
     @Override
