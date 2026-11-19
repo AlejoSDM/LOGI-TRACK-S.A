@@ -9,6 +9,7 @@ import com.s2.LogiTrack_S.A.repository.CiudadRepository;
 import com.s2.LogiTrack_S.A.service.CiudadService;
 import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.CiudadValidation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,28 +25,52 @@ public class CiudadServiceImpl implements CiudadService {
     private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
+    @Transactional
     public CiudadDtoResponse guardar(CiudadDtoRequest dto) {
         ciudadValidation.validarNombreGuardar(dto.nombreCiudad());
         Ciudad ciudad = ciudadMapper.dtoToEntity(dto);
         Ciudad ciudadGuardada = ciudadRepository.save(ciudad);
+        reportesAuditoriasService.registrar(
+                "CIUDAD",
+                "CREAR",
+                ciudadGuardada.getIdCiudad(),
+                "Se creó la ciudad: " + ciudadGuardada.getNombreCiudad()
+        );
         return ciudadMapper.entityToDto(ciudadGuardada);
     }
 
     @Override
+    @Transactional
     public CiudadDtoResponse actualizar(CiudadDtoRequest dto, Long id) {
         Ciudad ciudad = ciudadRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Ciudad no encontrada"));
         ciudadValidation.validarNombreActualizar(dto.nombreCiudad(), id);
         ciudadMapper.updateEntityFromDto(ciudad, dto);
         Ciudad ciudadActualizada = ciudadRepository.save(ciudad);
+        reportesAuditoriasService.registrar(
+                "CIUDAD",
+                "MODIFICAR",
+                ciudadActualizada.getIdCiudad(),
+                "Se modificó la ciudad: " + ciudadActualizada.getNombreCiudad()
+        );
         return ciudadMapper.entityToDto(ciudadActualizada);
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
         Ciudad ciudad = ciudadRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Ciudad no encontrada"));
         ciudadValidation.validarEliminar(id);
+        Long ciudadId = ciudad.getIdCiudad();
+        String nombreCiudad = ciudad.getNombreCiudad();
         ciudadRepository.delete(ciudad);
+        reportesAuditoriasService.registrar(
+                "CIUDAD",
+                "ELIMINAR",
+                ciudadId,
+                "Se eliminó la ciudad: " + nombreCiudad
+        );
     }
+
 
     @Override
     public List<CiudadDtoResponse> listar() {

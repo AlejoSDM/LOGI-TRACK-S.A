@@ -11,7 +11,6 @@ import com.s2.LogiTrack_S.A.repository.BodegaRepository;
 import com.s2.LogiTrack_S.A.repository.ProductosRepository;
 import com.s2.LogiTrack_S.A.model.InventarioBodega;
 import com.s2.LogiTrack_S.A.service.InventarioBodegaService;
-import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.InventarioBodegaValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,7 @@ public class InventarioBodegaServiceImpl implements InventarioBodegaService {
    private final InventarioBodegaMapper inventarioBodegaMapper;
    private final BodegaRepository bodegaRepository;
    private final ProductosRepository productosRepository;
-    private final InventarioBodegaValidation inventarioBodegaValidation;
-    private final ReportesAuditoriasService reportesAuditoriasService;
+   private final InventarioBodegaValidation inventarioBodegaValidation;
 
     @Override
     public InventarioBodegaDtoResponse guardar(InventarioBodegaDtoRequest dto) {

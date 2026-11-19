@@ -9,6 +9,7 @@ import com.s2.LogiTrack_S.A.repository.CategoriaProductoRepository;
 import com.s2.LogiTrack_S.A.service.CategoriaProductoService;
 import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.CategoriaProductoValidation;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,28 +26,51 @@ public class CategoriaProductoServiceImpl implements CategoriaProductoService {
     private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
+    @Transactional
     public CategoriaProductoDtoResponse guardar(CategoriaProductoDtoRequest dto) {
         CategoriaProducto categoriaProducto = categoriaProductoMapper.dtoToEntity(dto);
         categoriaProductoValidation.validarTipoCategoriaGuardar(dto.tipoCategoria());
         CategoriaProducto categoriaProductoGuardada = categoriaProductoRepository.save(categoriaProducto);
+        reportesAuditoriasService.registrar(
+                "CATEGORIA",
+                "CREAR",
+                categoriaProductoGuardada.getId(),
+                "Se creó la categoría: " + categoriaProductoGuardada.getTipoCategoria()
+        );
         return categoriaProductoMapper.entityToDto(categoriaProductoGuardada);
     }
 
     @Override
+    @Transactional
     public CategoriaProductoDtoResponse actualizar(CategoriaProductoDtoRequest dto, Long id) {
         categoriaProductoValidation.validarId(id);
         CategoriaProducto categoriaProducto = categoriaProductoRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Categoría no encontrada "));
         categoriaProductoValidation.validarTipoCategoriaActualizar(dto.tipoCategoria(), id);
         categoriaProductoMapper.updateEntityFromDto(categoriaProducto, dto);
         CategoriaProducto categoriaProductoActualizada = categoriaProductoRepository.save(categoriaProducto);
+        reportesAuditoriasService.registrar(
+                "CATEGORIA",
+                "MODIFICAR",
+                categoriaProductoActualizada.getId(),
+                "Se modificó la categoría: " + categoriaProductoActualizada.getTipoCategoria()
+        );
         return categoriaProductoMapper.entityToDto(categoriaProductoActualizada);
     }
 
     @Override
+    @Transactional
     public void eliminar(Long id) {
         CategoriaProducto categoriaProducto = categoriaProductoRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Categoría no encontrada "));
         categoriaProductoValidation.validarId(id);
+        Long categoriaId = categoriaProducto.getId();
+        CategoriaProducto.TipoCategoria tipoCategoria = categoriaProducto.getTipoCategoria();
         categoriaProductoRepository.delete(categoriaProducto);
+        reportesAuditoriasService.registrar(
+                "CATEGORIA",
+                "ELIMINAR",
+                categoriaId,
+                "Se eliminó la categoría: " + tipoCategoria
+        );
     }
 
     @Override
