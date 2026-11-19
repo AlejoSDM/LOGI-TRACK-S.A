@@ -59,6 +59,8 @@ public class AuditoriaSalidaEntradaServiceImpl implements AuditoriaSalidaEntrada
         auditoriaValidation.validarUsuario(u, b);
         // BUSCAR EL INVENTARIO EXISTENTE
         InventarioBodega inventario = inventarioBodegaRepository.findByBodegaId_IdAndProductoId_Id(dto.bodegaId(), dto.productoId()).orElseThrow(() -> new DatabaseRuleException("No existe un inventario registrado para este producto en esta bodega"));
+        if (dto.tipoAccion() == AuditoriaSalidaEntrada.TipoAccion.ENTRADA) {auditoriaValidation.validarCapacidad(b, dto.cantidad());
+        }
         // MODIFICAR STOCK
         auditoriaValidation.modificarStock(inventario, dto.tipoAccion(), dto.cantidad());
         inventarioBodegaRepository.save(inventario);

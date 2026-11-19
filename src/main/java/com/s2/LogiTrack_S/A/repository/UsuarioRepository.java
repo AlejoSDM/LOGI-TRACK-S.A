@@ -4,6 +4,7 @@ import com.s2.LogiTrack_S.A.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
@@ -15,6 +16,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findByRolAndEstado(
             Usuario.Rol rol, Boolean estado);
+
+    Optional<Usuario> findByUsername(String username);
 
     boolean existsByPersonaId_Id(Long personaId);
 

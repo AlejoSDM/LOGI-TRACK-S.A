@@ -9,10 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import com.s2.LogiTrack_S.A.repository.InventarioBodegaRepository;
+// ...
+
 
 @Component
 @RequiredArgsConstructor
 public class AuditoriaSalidaEntradaValidation {
+
+    private final InventarioBodegaRepository inventarioBodegaRepository;
 
     public void validarUsuario(Usuario usuario, Bodega bodega) {
 
@@ -84,6 +89,14 @@ public class AuditoriaSalidaEntradaValidation {
             throw new BusinessRuleException(
                     "La fecha inicial no puede ser posterior a la fecha final"
             );
+        }
+    }
+
+    public void validarCapacidad(Bodega bodega, Integer cantidad) {
+        Long stockActual = inventarioBodegaRepository.sumarStockPorBodega(bodega.getId());
+        if (stockActual + cantidad.longValue() > bodega.getCapacidad()) {
+            throw new BusinessRuleException(
+                    "La entrada supera la capacidad disponible de la bodega");
         }
     }
 }
