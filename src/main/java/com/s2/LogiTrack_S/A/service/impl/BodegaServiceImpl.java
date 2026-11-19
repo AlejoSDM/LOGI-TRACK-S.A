@@ -38,7 +38,7 @@ public class BodegaServiceImpl implements BodegaService {
     @Override
     public BodegaDtoResponse guardar(BodegaDtoRequest dto) {
            Ciudad c = ciudadRepository.findById(dto.ciudadId()).orElseThrow(() -> new DatabaseRuleException("No existe la ciudad"));
-           Usuario u = usuarioRepository.findById(dto.empleadoId()).orElseThrow(() -> new DatabaseRuleException("No existe el empleado"));
+           Usuario u = usuarioRepository.findById(dto.usuarioId()).orElseThrow(() -> new DatabaseRuleException("No existe el empleado"));
            bodegaValidation.validarNombreGuardar(dto.nombre(), dto.ciudadId());
            bodegaValidation.validarCapacidad(dto.capacidad(), null);
            bodegaValidation.validarEmpleado(u);
@@ -54,7 +54,7 @@ public class BodegaServiceImpl implements BodegaService {
           bodegaValidation.validarNombreActualizar(dto.nombre(), dto.ciudadId(), id);
           bodegaValidation.validarCapacidad(dto.capacidad(), id);
           Ciudad c = ciudadRepository.findById(dto.ciudadId()).orElseThrow(() -> new DatabaseRuleException("No existe la ciudad"));
-          Usuario u = usuarioRepository.findById(dto.empleadoId()).orElseThrow(() -> new DatabaseRuleException("No existe el empleado"));
+          Usuario u = usuarioRepository.findById(dto.usuarioId()).orElseThrow(() -> new DatabaseRuleException("No existe el empleado"));
           bodegaValidation.validarEmpleado(u);
           CiudadDtoResponse ciudadDto = ciudadMapper.entityToDto(c);
           UsuarioDtoResponse usuarioDto = usuarioMapper.entityToDto(u, personaMapper.entityToDto(u.getPersonaId()));
