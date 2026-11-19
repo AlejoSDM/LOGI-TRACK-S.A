@@ -7,9 +7,7 @@ import com.s2.LogiTrack_S.A.mapper.PersonaMapper;
 import com.s2.LogiTrack_S.A.model.Persona;
 import com.s2.LogiTrack_S.A.repository.PersonaRepository;
 import com.s2.LogiTrack_S.A.service.PersonaService;
-import com.s2.LogiTrack_S.A.service.ReportesAuditoriasService;
 import com.s2.LogiTrack_S.A.validation.PersonaValidation;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,52 +20,27 @@ public class PersonaServiceImpl implements PersonaService {
     private final PersonaMapper personaMapper;
     private final PersonaRepository personaRepository;
     private final PersonaValidation personaValidation;
-    private final ReportesAuditoriasService reportesAuditoriasService;
 
     @Override
-    @Transactional
     public PersonaDtoResponse guardar(PersonaDtoRequest dto) {
-        Persona p = personaMapper.dtoToEntity(dto);
-        Persona guardada = personaRepository.save(p);
-        reportesAuditoriasService.registrar(
-                "PERSONA",
-                "CREAR",
-                guardada.getId(),
-                "Se creó la persona: " + guardada.getNombre()
-        );
-        return personaMapper.entityToDto(guardada);
+       Persona p = personaMapper.dtoToEntity(dto);
+       Persona PersonaDtoResponse = personaRepository.save(p);
+       return personaMapper.entityToDto(PersonaDtoResponse);
     }
 
     @Override
-    @Transactional
     public PersonaDtoResponse actualizar(PersonaDtoRequest dto, Long id) {
         Persona p = personaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Persona no encontrada: "));
         personaMapper.updateEntityFromDto(p, dto);
         Persona personaActualizada = personaRepository.save(p);
-        reportesAuditoriasService.registrar(
-                "PERSONA",
-                "MODIFICAR",
-                personaActualizada.getId(),
-                "Se modificó la persona: " + personaActualizada.getNombre()
-        );
         return personaMapper.entityToDto(personaActualizada);
     }
 
-
     @Override
-    @Transactional
     public void eliminar(Long id) {
         Persona p = personaRepository.findById(id).orElseThrow(() -> new DatabaseRuleException("Persona no encontrada: "));
         personaValidation.validarEliminar(id);
-        Long personaId = p.getId();
-        String nombrePersona = p.getNombre();
         personaRepository.delete(p);
-        reportesAuditoriasService.registrar(
-                "PERSONA",
-                "ELIMINAR",
-                personaId,
-                "Se eliminó la persona: " + nombrePersona
-        );
     }
 
     @Override

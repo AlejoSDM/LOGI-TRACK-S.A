@@ -16,7 +16,6 @@ public class ReportesAuditoriasValidation {
             "CATEGORIA",
             "BODEGA",
             "CIUDAD",
-            "USUARIO",
             "INVENTARIO"
     );
 
