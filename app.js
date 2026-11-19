@@ -483,6 +483,14 @@ async function crud(key) {
                 }
             });
 
+            // CAMBIAR LOS NOMBRES DE LOS CAMPOS SEGÚN EL MAPEO
+            if (entity.m) {
+                Object.entries(entity.m).forEach(([field, responseField]) => {
+                    body[responseField] = body[field];
+                    delete body[field];
+                });
+            }
+
             await api(
                 entity.p + (editingId ? '/' + editingId : ''),
                 editingId ? 'PUT' : 'POST',
