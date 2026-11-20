@@ -433,40 +433,40 @@ Las siguientes imágenes permiten mostrar el funcionamiento de la aplicación y 
 
 ### Inicio de sesión
 
-![alt text](../../Desktop/FRONT/image.png)
+![img_1.png](/img/image-1.png)
 
 ### Panel principal
 
-![alt text](../../Desktop/FRONT/image-2.png)
+![img_2.png](/img/image-2.png)
 
 ### Gestión de bodegas
 
-![alt text](../../Desktop/FRONT/image-1.png)
+![alt text](/img/image-1.png)
 
 ### Gestión de productos
 
-![alt text](../../Desktop/FRONT/image-3.png)
+![img_3.png](/img/image-3.png)
 
 ### Inventario por bodega
 
-![alt text](../../Desktop/FRONT/image-9.png)
+![img_4.png](/img/image-4.png)
 
 ### Historial de movimientos y auditorías
 
-![alt text](../../Desktop/FRONT/image-4.png)
+![img_5.png](/img/image-5.png)
 
 ### Reportes generales
 
-![alt text](../../Desktop/FRONT/image-5.png)
+![alt text](/img/image-5.png)
 
 ### Documentación Swagger
 
-![alt text](../../Desktop/FRONT/image-6.png)
-![alt text](../../Desktop/FRONT/image-7.png)
+![alt text](/img/image-6.png)
+![alt text](/img/image-7.png)
 
 ### Prueba de autenticación JWT
 
-![alt text](../../Desktop/FRONT/image-8.png)
+![alt text](/img/image-8.png)
 
 ## Repositorio
 
