@@ -1,0 +1,164 @@
+
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101827">
+    <meta name="description" content="LogiTrack S.A. - Sistema de gestión logística e inventarios">
+    <title>LogiTrack S.A. | Gestión logística</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <!-- Autenticación -->
+    <section id="auth" class="auth-screen" hidden>
+        <div class="auth-decoration">
+            <div class="auth-brand">
+                <div class="brand-mark">L</div>
+                <span>LOGITRACK <em>S.A.</em></span>
+            </div>
+            <div class="auth-message">
+                <span class="eyebrow">GESTIÓN INTELIGENTE</span>
+                <h2>Tu operación logística,<br><em>bajo control.</em></h2>
+                <p>Administra bodegas, controla inventarios y supervisa cada movimiento desde un solo lugar.</p>
+                <div class="auth-features">
+                    <span>✓ Control de inventarios</span>
+                    <span>✓ Seguimiento de movimientos</span>
+                    <span>✓ Gestión de bodegas</span>
+                </div>
+            </div>
+            <span class="auth-footer">LOGITRACK S.A. · SISTEMA DE GESTIÓN</span>
+        </div>
+
+        <div class="auth-panel">
+            <div class="auth-mobile-brand">
+                <div class="brand-mark">L</div>
+                <strong>LOGITRACK <em>S.A.</em></strong>
+            </div>
+
+            <div class="auth-heading">
+                <span class="eyebrow">BIENVENIDO</span>
+                <h1>Accede a tu cuenta</h1>
+                <p>Ingresa tus credenciales para continuar.</p>
+            </div>
+
+            <div class="tabs">
+                <button type="button" data-t="fLogin" class="on">Iniciar sesión</button>
+                <button type="button" data-t="fReg">Crear cuenta</button>
+            </div>
+
+            <form id="fLogin" class="auth-form">
+                <label>
+                    Usuario
+                    <input name="username" placeholder="Tu nombre de usuario" autocomplete="username" required>
+                </label>
+                <label>
+                    Contraseña
+                    <input name="password" type="password" placeholder="Tu contraseña" autocomplete="current-password" required>
+                </label>
+                <button class="primary-btn auth-submit" type="submit">Ingresar <span>→</span></button>
+            </form>
+
+            <form id="fReg" class="auth-form" hidden>
+                <label>
+                    Nombre completo
+                    <input name="nombre" placeholder="Tu nombre completo" autocomplete="name" required>
+                </label>
+                <label>
+                    Nombre de usuario
+                    <input name="username" placeholder="Mínimo 6 caracteres" minlength="6" autocomplete="username" required>
+                </label>
+                <label>
+                    Contraseña
+                    <input name="password" type="password" placeholder="Mínimo 8 caracteres" minlength="8" autocomplete="new-password" required>
+                </label>
+                <button class="primary-btn auth-submit" type="submit">Solicitar acceso <span>→</span></button>
+            </form>
+
+            <p class="auth-note">Acceso seguro al sistema de gestión LogiTrack.</p>
+        </div>
+    </section>
+
+    <!-- Solicitud pendiente -->
+    <section id="pending" class="pending-screen" hidden>
+        <div class="pending-card">
+            <div class="pending-icon">⌛</div>
+            <span class="eyebrow">ACCESO PENDIENTE</span>
+            <h1>Tu solicitud está en revisión</h1>
+            <p>Tu registro se realizó correctamente. Un administrador debe aprobar tu acceso antes de que puedas ingresar al sistema.</p>
+            <button id="back" class="primary-btn">Volver al inicio</button>
+        </div>
+    </section>
+
+    <!-- Aplicación -->
+    <section id="app" class="app-shell" hidden>
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-mark">L</div>
+                <div>
+                    <strong>LOGITRACK <em>S.A.</em></strong>
+                    <small>GESTIÓN LOGÍSTICA</small>
+                </div>
+            </div>
+
+            <div class="sidebar-label">MENÚ PRINCIPAL</div>
+            <nav id="nav" aria-label="Navegación principal"></nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-status">
+                    <span class="status-dot"></span>
+                    Sistema operativo
+                </div>
+                <small>LogiTrack S.A. · 2026</small>
+            </div>
+        </aside>
+
+        <div class="workspace">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="topbar-mark">L</div>
+                    <div>
+                        <strong>Panel de gestión</strong>
+                        <small>Control de operaciones e inventario</small>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="avatar">U</div>
+                        <div class="user-text">
+                            <strong id="who"></strong>
+                            <small>Sesión activa</small>
+                        </div>
+                    </div>
+                    <button id="out" class="logout-btn" type="button" title="Cerrar sesión">
+                        <span>↪</span> <span class="logout-text">Salir</span>
+                    </button>
+                </div>
+            </header>
+
+            <main id="main" class="page-content"></main>
+
+            <footer class="page-footer">
+                <span>© 2026 LogiTrack S.A.</span>
+                <span>Sistema de gestión logística</span>
+            </footer>
+        </div>
+    </section>
+
+    <!-- Ventanas y notificaciones -->
+    <dialog id="dlg" class="app-dialog"></dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
