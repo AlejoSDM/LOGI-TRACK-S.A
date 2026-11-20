@@ -45,7 +45,7 @@ public class AuthController {
         res.put("nombre", u.getPersonaId().getNombre());
         // Usuario pendiente de aprobación: NO se entrega token
         if (Boolean.TRUE.equals(u.getEstado()))
-            res.put("token", jwtService.generateToken(u.getUsername(), u.getRol().name(), u.getId()));
+            res.put("token", jwtService.generateToken(u.getUsername(), u.getId()));
         return res;
     }
 
